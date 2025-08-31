@@ -1,256 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Results May Vary — CRT Radar Console</title>
-<style>
-:root {
-  --sand: rgb(239, 229, 205);
-  --ink: #101010;
-  --khaki: rgb(217, 207, 186);
-  --slate: rgb(82, 78, 71);
-  --line: rgba(217, 207, 186, .35);
-  --glass: rgba(217, 207, 186, .12);
-}
-html, body { height: 100%; margin: 0; }
-body {
-  background: var(--ink);
-  color: var(--sand);
-  font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  overflow-x: hidden;
-  letter-spacing: .2px;
-}
-.grid {
-  position: fixed; inset: 0; z-index: -3;
-  background:
-    linear-gradient(rgba(82,78,71,.08) 1px, transparent 1px) 0 0/44px 44px,
-    linear-gradient(90deg, rgba(82,78,71,.08) 1px, transparent 1px) 0 0/44px 44px;
-}
-.static {
-  position: fixed; inset: 0; z-index: -2;
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,.02), rgba(255,255,255,.02) 2px, transparent 3px, transparent 4px);
-  mix-blend-mode: overlay;
-  animation: jitter 8s infinite steps(6);
-  pointer-events: none;
-}
-@keyframes jitter {
-  0% { transform: translateY(0) }
-  50% { transform: translateY(2px) }
-  100% { transform: translateY(0) }
-}
-header {
-  padding: clamp(48px,6vw,96px) 24px 24px;
-  text-align: center;
-}
-.title {
-  font-size: clamp(28px,5.2vw,56px);
-  margin: 0 0 8px;
-  color: var(--khaki);
-  text-shadow: 0 0 24px rgba(217,207,186,.12);
-}
-.tag {
-  opacity: .9;
-  max-width: 860px;
-  margin: 0 auto;
-}
-.console {
-  margin: 24px auto 64px;
-  width: min(1200px, 94vw);
-  display: grid;
-  grid-template-columns: 1.2fr .9fr;
-  gap: 24px;
-}
-@media (max-width: 980px) {
-  .console { grid-template-columns: 1fr; }
-}
-.panel {
-  background: linear-gradient(180deg, rgba(217,207,186,.05), rgba(82,78,71,.05));
-  border: 1px dashed var(--line);
-  border-radius: 16px;
-  overflow: hidden;
-  backdrop-filter: blur(2px) saturate(120%);
-  box-shadow: inset 0 0 0 1px rgba(239,229,205,.05);
-}
-.panel-head {
-  padding: 12px 14px;
-  border-bottom: 1px dashed var(--line);
-  color: var(--khaki);
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  font-size: 12px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Results May Vary — Terminal</title>
+    <style>
+        :root {
+            --bg: #101010;
+            --fg: rgb(239, 229, 205);
+            --secondary: rgb(217, 207, 186);
+            --accent: rgb(82, 78, 71);
+        }
+        html, body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: "Courier New", monospace;
+            height: 100%;
+            overflow: hidden;
+        }
 
-/* === RADAR === */
-.radar-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: radial-gradient(circle at center, rgba(217,207,186,.08) 0%, transparent 80%);
-  border-radius: 12px;
-}
-.radar {
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(90deg, rgba(239,229,205,.02) 1px, transparent 2px),
-              repeating-linear-gradient(0deg, rgba(239,229,205,.02) 1px, transparent 2px);
-  position: relative;
-  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 95%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 95%, transparent 100%);
-  transform: perspective(800px) rotateX(6deg) scale(1.03);
-}
-.radar-sweep {
-  position: absolute;
-  width: 200%; height: 200%;
-  top: -50%; left: -50%;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, rgba(239,229,205,.2) 0deg, rgba(239,229,205,.0) 60deg);
-  animation: sweep 6s linear infinite;
-}
-@keyframes sweep {
-  to { transform: rotate(360deg); }
-}
-.radar-blip {
-  position: absolute;
-  width: 10px; height: 10px;
-  background: var(--sand);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(239,229,205,.6);
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: transform .2s;
-}
-.radar-blip:hover {
-  transform: translate(-50%, -50%) scale(1.4);
-}
+        /* Boot Screen */
+        #boot {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            text-align: center;
+            z-index: 10;
+        }
+        .boot-log {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            max-height: 30vh;
+            min-height: 110px;
+            overflow-y: auto;
+            width: 80%;
+            text-align: left;
+            border: 1px dashed rgba(239,229,205,0.15);
+            padding: 0.5rem;
+        }
+        .boot-line {
+            opacity: 0.85;
+        }
+        #boot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.02),
+                    rgba(255,255,255,0.02) 2px,
+                    transparent 3px,
+                    transparent 4px
+            );
+            pointer-events: none;
+        }
 
-.hud {
-  display: grid; grid-template-rows: auto 1fr auto;
-}
-.hud-body {
-  padding: 16px;
-  display: grid;
-  gap: 12px;
-}
-.hud h3 {
-  margin: .2rem 0;
-  font-size: 20px;
-  color: var(--khaki);
-}
-.hud-footer {
-  padding: 10px 14px;
-  border-top: 1px dashed var(--line);
-  font-size: 12px;
-  color: var(--khaki);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.btn {
-  border: 1px solid var(--line);
-  background: var(--glass);
-  color: var(--sand);
-  padding: 8px 12px;
-  border-radius: 10px;
-  text-decoration: none;
-  display: inline-flex;
-  gap: 8px;
-  transition: .15s ease;
-  cursor: pointer;
-}
-footer {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--slate);
-}
-</style>
+        /* Main Terminal */
+        #terminal {
+            display: none;
+            position: relative;
+            width: 100%; height: 100%;
+            overflow: hidden;
+        }
+
+        /* CRT */
+        .crt::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.02),
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 2px,
+                    transparent 3px
+            );
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+        .crt::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0) 80%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+        }
+        .crt {
+            filter: contrast(1.2) saturate(1.1);
+            transform: perspective(800px) rotateX(1deg) scale(1.02);
+        }
+
+        /* Layout */
+        .terminal-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100%;
+        }
+
+        .left-log, .right-info {
+            padding: 1rem;
+            font-size: 0.9rem;
+            border-right: 1px dashed rgba(239,229,205,0.15);
+        }
+        .right-info {
+            border-left: 1px dashed rgba(239,229,205,0.15);
+            border-right: none;
+        }
+
+        /* Tactical Map */
+        .map {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .map-grid {
+            width: 80vmin;
+            height: 80vmin;
+            border: 1px dashed rgba(239,229,205,0.15);
+            position: relative;
+            background: radial-gradient(circle at center, rgba(217,207,186,0.05) 20%, transparent 100%);
+            overflow: hidden;
+        }
+
+        /* Radar Sweep */
+        .sweep {
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(
+                    from 0deg,
+                    rgba(239,229,205,0.12) 0deg,
+                    rgba(239,229,205,0) 90deg
+            );
+            border-radius: 50%;
+            animation: sweep 6s linear infinite;
+            mix-blend-mode: screen;
+        }
+        @keyframes sweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Blips */
+        .blip {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: var(--fg);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+        .blip:hover {
+            box-shadow: 0 0 10px var(--fg);
+            transform: scale(1.3);
+        }
+        .blip::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border: 1px solid rgba(239,229,205,0.4);
+            border-radius: 50%;
+        }
+
+        /* UUID Tag */
+        .uuid {
+            position: absolute;
+            top: -10px;
+            right: -32px;
+            font-size: 0.6rem;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Codec Popup */
+        .codec {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(82,78,71,0.25);
+            border: 1px dashed rgba(217,207,186,0.3);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            max-width: 60%;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        /* Terminal Section */
+        .terminal-box {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            background: rgba(16,16,16,0.85);
+            border: 1px dashed rgba(239,229,205,0.15);
+            margin-top: 1rem;
+            height: 30vh;
+            overflow: hidden;
+        }
+        .terminal-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            line-height: 1.2rem;
+        }
+        .terminal-input {
+            border-top: 1px dashed rgba(239,229,205,0.15);
+            padding: 0.3rem;
+        }
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            color: var(--fg);
+            width: 90%;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        input:focus { outline: none; }
+
+        /* Blinking cursor */
+        .cursor {
+            display: inline-block;
+            width: 0.7ch;
+            background: var(--fg);
+            animation: blinks 1s step-start infinite;
+        }
+        @keyframes blinks { 50% { background: transparent; } }
+
+        #cursor {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
-<body>
-<div class="grid"></div>
-<div class="static"></div>
+<body class="crt">
 
-<header>
-  <h1 class="title">Results May Vary</h1>
-  <p class="tag">Now scanning the open-source void for questionable treasures.</p>
-</header>
+<div id="boot">
+    <div>RESULTS MAY VARY TERMINAL</div>
+    <div class="flicker">INITIALIZING...</div>
+    <div class="boot-log" id="boot-log"></div>
+    <small id="start" style="margin-top:1em;opacity:0.6;display:none">
+        Press any key to begin operation<span id="cursor">_</span>
+    </small>
+</div>
 
-<main class="console">
-  <section class="panel">
-    <div class="panel-head">OSS Radar</div>
-    <div class="radar-wrap">
-      <div class="radar" id="radar">
-        <div class="radar-sweep"></div>
-      </div>
+<div id="terminal">
+    <div class="terminal-grid">
+        <div class="left-log">
+            <h3>MISSION FEED</h3>
+            <p>[POSTIER] Parcel Ops — Handle with care (and duct tape).</p>
+            <p>[ARCHUPDATE] Rolling Breakpoint Initiative — proceed with helmet.</p>
+            <p>[CARNET] Notebook Espionage — top secret scribbles.</p>
+        </div>
+
+        <div class="map">
+            <div class="map-grid" id="map">
+                <div class="sweep"></div>
+            </div>
+            <div class="codec" id="codec">Select a mission blip.</div>
+        </div>
+
+        <div class="right-info">
+            <h3>TERMINAL STATUS</h3>
+            <p>Connection: Stable</p>
+            <p>Signal Noise: Moderate</p>
+            <p>Operator: <strong>Results May Vary</strong></p>
+        </div>
+
+        <!-- Terminal Console -->
+        <div class="terminal-box">
+            <div class="terminal-output" id="term-output"></div>
+            <div class="terminal-input">
+                <span>&gt; </span><input type="text" id="term-input" placeholder="Awaiting command...">
+            </div>
+        </div>
     </div>
-  </section>
-
-  <aside class="panel hud">
-    <div class="panel-head">MISSION LOG</div>
-    <div class="hud-body">
-      <div>
-        <div>Selected Repository</div>
-        <h3 id="repo-name">No ping yet…</h3>
-      </div>
-      <div class="hud-desc" id="repo-desc">
-        Click a blip to get its questionable data.
-      </div>
-    </div>
-    <div class="hud-footer">
-      <span>Tracking: 3 repos</span>
-      <a class="btn" id="repo-link" href="#" target="_blank">Open →</a>
-    </div>
-  </aside>
-</main>
-
-<footer>
-  © <span id="year"></span> Results May Vary — scanning continues.
-</footer>
+</div>
 
 <script>
-const repos = [
-  {
-    name: "postier",
-    url: "https://github.com/bouteillerAlan/postier",
-    desc: "A postal service helper that might just deliver your sanity.",
-  },
-  {
-    name: "archupdate",
-    url: "https://github.com/bouteillerAlan/archupdate",
-    desc: "Because Arch users like living on the edge… of system stability.",
-  },
-  {
-    name: "carnet",
-    url: "https://github.com/results-may-vary-org/carnet",
-    desc: "A notebook app with less drama and more data.",
+  const bootLines = [
+    "BOOTING RMV OS v4.0.4...",
+    "LOADING TACTICOOL MODULES...",
+    "ESTABLISHING MOSTLY ENCRYPTED LINK...",
+    "CALIBRATING CRT CURVATURE...",
+    "LOADING MAP BLIPS...",
+    "OPERATOR ONLINE..."
+  ];
+  const repos = [
+    {
+      name: "archupdate",
+      url: "https://github.com/bouteillerAlan/archupdate",
+      desc: "Rolling Breakpoint Initiative: update Arch, break Arch, repeat."
+    },
+    {
+      name: "carnet",
+      url: "https://github.com/results-may-vary-org/carnet",
+      desc: "Notebook Espionage: jot things down before they escape."
+    },
+    {
+      name: "docker-companion",
+      url: "https://github.com/bouteillerAlan/docker-companion",
+      desc: "A docker companion right in your system tray for KDE 6."
+    },
+    {
+      name: "blurredwallpaper",
+      url: "https://github.com/bouteillerAlan/blurredwallpaper",
+      desc: "Blur & DIM your wallpaper when a window is active for KDE 6."
+    },
+    {
+      name: "earbud-companion",
+      url: "https://github.com/bouteillerAlan/earbud-companion",
+      desc: "Show your earbuds in a nice way in your system tray for KDE 6."
+    },
+    {
+      name: "dockolor",
+      url: "https://github.com/bouteillerAlan/dockolor",
+      desc: "Simply colorized the output of docker ps."
+    },
+    {
+      name: "postier",
+      url: "https://github.com/bouteillerAlan/postier",
+      desc: "Parcel Operations: a postal service toolkit designed for chaotic good."
+    },
+    {
+      name: "grid",
+      url: "https://github.com/bouteillerAlan/grid",
+      desc: "UI design with grid, now you can dev with it too."
+    }
+
+  ];
+
+  const bootLog = document.getElementById('boot-log');
+  const start = document.getElementById('start');
+  const codec = document.getElementById('codec');
+  const map = document.getElementById('map');
+  const termOutput = document.getElementById('term-output');
+
+  // boot screen typing effect
+  let bootIndex = 0;
+  function typeBootLine() {
+    if (bootIndex >= bootLines.length) {
+      start.style.display = 'block';
+      return;
+    }
+    const line = document.createElement('div');
+    line.className = 'boot-line';
+    bootLog.appendChild(line);
+
+    const text = bootLines[bootIndex];
+    const len = text.length;
+    let j = 0;
+    const charDelay = 40; // milliseconds per character
+    let lastTime = 0;
+
+    function typeChar(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const elapsed = timestamp - lastTime;
+
+      if (elapsed >= charDelay) {
+        line.textContent = text.slice(0, ++j);
+        bootLog.scrollTop = bootLog.scrollHeight;
+        lastTime = timestamp;
+      }
+
+      if (j < len) {
+        requestAnimationFrame(typeChar);
+      } else {
+        bootIndex++;
+        setTimeout(typeBootLine, 100); // Delay before nextline
+      }
+    }
+    requestAnimationFrame(typeChar);
   }
-];
+  typeBootLine();
 
-const radar = document.getElementById("radar");
-function populateRadar() {
-  const center = 50; // percent
+  // Start terminal
+  document.addEventListener('keydown', () => {
+    document.getElementById('boot').style.display = 'none';
+    document.getElementById('terminal').style.display = 'block';
+  }, { once: true });
+
+  // UUID generator
+  function genShortUUID() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11)
+      .replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      ).slice(0, 8);
+  }
+
+  // Typing effect for terminal
+  function typeToTerminal(lines, speed = 50) {
+    let i = 0;
+    function typeLine() {
+      if (i < lines.length) {
+        const line = document.createElement('div');
+        termOutput.appendChild(line);
+        let j = 0;
+        function typeChar() {
+          if (j < lines[i].length) {
+            line.textContent += lines[i][j];
+            j++;
+            setTimeout(typeChar, speed);
+            termOutput.scrollTop = termOutput.scrollHeight;
+          } else {
+            i++;
+            setTimeout(typeLine, 150);
+          }
+        }
+        typeChar();
+      } else {
+        const cursor = document.createElement('div');
+        cursor.innerHTML = '&gt; <span class="cursor"></span>';
+        termOutput.appendChild(cursor);
+        termOutput.scrollTop = termOutput.scrollHeight;
+      }
+    }
+    typeLine();
+  }
+
+  // Add blips
   repos.forEach(repo => {
-    const angle = Math.random() * 2 * Math.PI;
-    const radius = 20 + Math.random() * 30; // between 20–50% from center
-    const x = center + Math.cos(angle) * radius;
-    const y = center + Math.sin(angle) * radius;
-    const blip = document.createElement("div");
-    blip.className = "radar-blip";
-    blip.style.left = x + "%";
-    blip.style.top = y + "%";
-    blip.title = repo.name;
-    blip.addEventListener("click", () => {
-      document.getElementById("repo-name").textContent = repo.name;
-      document.getElementById("repo-desc").textContent = repo.desc;
-      document.getElementById("repo-link").href = repo.url;
-    });
-    radar.appendChild(blip);
-  });
-}
-populateRadar();
+    const blip = document.createElement('div');
+    blip.className = 'blip';
+    const x = 20 + Math.random() * 60;
+    const y = 20 + Math.random() * 60;
+    blip.style.left = `${x}%`;
+    blip.style.top = `${y}%`;
 
-document.getElementById("year").textContent = new Date().getFullYear();
+    const label = document.createElement('div');
+    label.className = 'uuid';
+    label.textContent = genShortUUID();
+    blip.appendChild(label);
+
+    blip.addEventListener('mouseenter', () => {
+      codec.style.display = 'block';
+      codec.innerHTML = `<strong>${repo.name}</strong><br>${repo.desc}<br><a href="${repo.url}" target="_blank" style="color:var(--fg);text-decoration:underline;">View Repository</a>`;
+    });
+
+    blip.addEventListener('mouseleave', () => {
+      codec.innerHTML = "Select a mission blip.";
+    });
+
+    blip.addEventListener('click', () => {
+      typeToTerminal([
+        `> Loading mission data for ${repo.name}...`,
+        `> Description: ${repo.desc}`,
+        `> Repository link: ${repo.url}`,
+        `> Status: READY`
+      ]);
+    });
+
+    map.appendChild(blip);
+  });
 </script>
 </body>
 </html>
-
