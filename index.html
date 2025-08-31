@@ -16,8 +16,6 @@
             background: var(--bg);
             color: var(--fg);
             font-family: "Courier New", monospace;
-            height: 100%;
-            overflow: hidden;
         }
 
         /* Boot Screen */
@@ -64,9 +62,8 @@
         /* Main Terminal */
         #terminal {
             display: none;
-            position: relative;
-            width: 100%; height: 100%;
-            overflow: hidden;
+            height: 100vh;
+            width: calc(100vw - 0.5rem);
         }
 
         /* CRT */
@@ -98,17 +95,17 @@
 
         /* Layout */
         .terminal-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            grid-template-rows: auto 1fr;
-            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .left-log, .right-info {
             padding: 1rem;
             font-size: 0.9rem;
             border-right: 1px dashed rgba(239,229,205,0.15);
+            width: 25vw;
         }
+        .left-log {}
         .right-info {
             border-left: 1px dashed rgba(239,229,205,0.15);
             border-right: none;
@@ -116,14 +113,13 @@
 
         /* Tactical Map */
         .map {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .map-grid {
-            width: 80vmin;
-            height: 80vmin;
+            width: calc(50vw - 5rem);
+            height: 40vw;
             border: 1px dashed rgba(239,229,205,0.15);
             position: relative;
             background: radial-gradient(circle at center, rgba(217,207,186,0.05) 20%, transparent 100%);
@@ -197,14 +193,14 @@
 
         /* Terminal Section */
         .terminal-box {
-            grid-column: 2;
-            grid-row: 2;
+            background: red;
             display: flex;
             flex-direction: column;
             background: rgba(16,16,16,0.85);
             border: 1px dashed rgba(239,229,205,0.15);
             margin-top: 1rem;
-            height: 30vh;
+            width: 100%;
+            height: calc(100vh - 40vw - 2rem);
             overflow: hidden;
         }
         .terminal-output {
@@ -245,7 +241,7 @@
         }
     </style>
 </head>
-<body class="crt">
+<body>
 
 <div id="boot">
     <div>RESULTS MAY VARY TERMINAL</div>
@@ -260,9 +256,9 @@
     <div class="terminal-grid">
         <div class="left-log">
             <h3>MISSION FEED</h3>
-            <p>[POSTIER] Parcel Ops — Handle with care (and duct tape).</p>
-            <p>[ARCHUPDATE] Rolling Breakpoint Initiative — proceed with helmet.</p>
             <p>[CARNET] Notebook Espionage — top secret scribbles.</p>
+            <p>[ARCHUPDATE] Rolling Breakpoint Initiative — proceed with helmet.</p>
+            <p>[BLURREDWLP] BLur it out!</p>
         </div>
 
         <div class="map">
@@ -278,13 +274,11 @@
             <p>Signal Noise: Moderate</p>
             <p>Operator: <strong>Results May Vary</strong></p>
         </div>
-
-        <!-- Terminal Console -->
-        <div class="terminal-box">
-            <div class="terminal-output" id="term-output"></div>
-            <div class="terminal-input">
-                <span>&gt; </span><input type="text" id="term-input" placeholder="Awaiting command...">
-            </div>
+    </div>
+    <div class="terminal-box">
+        <div class="terminal-output" id="term-output"></div>
+        <div class="terminal-input">
+            <span>&gt; </span><input type="text" id="term-input" placeholder="Awaiting command...">
         </div>
     </div>
 </div>
