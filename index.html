@@ -2,296 +2,230 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Results May Vary — Terminal</title>
+    <title>Results May Vary Terminal</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         :root {
             --bg: #101010;
             --fg: rgb(239, 229, 205);
+            --fgBorder: rgba(239,229,205,0.15);
             --secondary: rgb(217, 207, 186);
-            --accent: rgb(82, 78, 71);
+            --accent: rgba(82, 78, 71, 0.65);
+            --green: #7E8B55;
         }
         html, body {
             margin: 0; padding: 0;
             background: var(--bg);
             color: var(--fg);
-            font-family: "Courier New", monospace;
+            font-family: "Quantico", sans-serif;
+            font-weight: 400;
+            font-style: normal;
         }
-
-        /* Boot Screen */
+        h3 {
+            margin-top: 0;
+        }
+        p > span {
+            font-weight: 700;
+        }
         #boot {
-            position: fixed; inset: 0;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            letter-spacing: 0.1em;
-            text-align: center;
-            z-index: 10;
-        }
-        .boot-log {
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            max-height: 30vh;
-            min-height: 110px;
-            overflow-y: auto;
-            width: 80%;
-            text-align: left;
-            border: 1px dashed rgba(239,229,205,0.15);
-            padding: 0.5rem;
-        }
-        .boot-line {
-            opacity: 0.85;
-        }
-        #boot::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                    0deg,
-                    rgba(255,255,255,0.02),
-                    rgba(255,255,255,0.02) 2px,
-                    transparent 3px,
-                    transparent 4px
-            );
-            pointer-events: none;
-        }
-
-        /* Main Terminal */
-        #terminal {
-            display: none;
             height: 100vh;
-            width: calc(100vw - 0.5rem);
-        }
-
-        /* CRT */
-        .crt::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                    0deg,
-                    rgba(255,255,255,0.02),
-                    rgba(255,255,255,0.02) 1px,
-                    transparent 2px,
-                    transparent 3px
-            );
-            mix-blend-mode: overlay;
-            pointer-events: none;
-        }
-        .crt::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, rgba(0,0,0,0) 80%, rgba(0,0,0,0.5) 100%);
-            pointer-events: none;
-        }
-        .crt {
-            filter: contrast(1.2) saturate(1.1);
-            transform: perspective(800px) rotateX(1deg) scale(1.02);
-        }
-
-        /* Layout */
-        .terminal-grid {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .left-log, .right-info {
-            padding: 1rem;
-            font-size: 0.9rem;
-            border-right: 1px dashed rgba(239,229,205,0.15);
-            width: 25vw;
-        }
-        .left-log {}
-        .right-info {
-            border-left: 1px dashed rgba(239,229,205,0.15);
-            border-right: none;
-        }
-
-        /* Tactical Map */
-        .map {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .map-grid {
-            width: calc(50vw - 5rem);
-            height: 40vw;
-            border: 1px dashed rgba(239,229,205,0.15);
-            position: relative;
-            background: radial-gradient(circle at center, rgba(217,207,186,0.05) 20%, transparent 100%);
-            overflow: hidden;
-        }
-
-        /* Radar Sweep */
-        .sweep {
-            position: absolute;
-            inset: 0;
-            background: conic-gradient(
-                    from 0deg,
-                    rgba(239,229,205,0.12) 0deg,
-                    rgba(239,229,205,0) 90deg
-            );
-            border-radius: 50%;
-            animation: sweep 6s linear infinite;
-            mix-blend-mode: screen;
-        }
-        @keyframes sweep {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Blips */
-        .blip {
-            position: absolute;
-            width: 14px; height: 14px;
-            background: var(--fg);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            cursor: pointer;
-        }
-        .blip:hover {
-            box-shadow: 0 0 10px var(--fg);
-            transform: scale(1.3);
-        }
-        .blip::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border: 1px solid rgba(239,229,205,0.4);
-            border-radius: 50%;
-        }
-
-        /* UUID Tag */
-        .uuid {
-            position: absolute;
-            top: -10px;
-            right: -32px;
-            font-size: 0.6rem;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        /* Codec Popup */
-        .codec {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(82,78,71,0.25);
-            border: 1px dashed rgba(217,207,186,0.3);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            text-align: center;
-            max-width: 60%;
-            font-size: 0.95rem;
-            display: none;
-        }
-
-        /* Terminal Section */
-        .terminal-box {
-            background: red;
+            width: 100vw;
             display: flex;
             flex-direction: column;
-            background: rgba(16,16,16,0.85);
-            border: 1px dashed rgba(239,229,205,0.15);
-            margin-top: 1rem;
-            width: 100%;
-            height: calc(100vh - 40vw - 2rem);
-            overflow: hidden;
+            justify-content: center;
+            align-items: center;
         }
-        .terminal-output {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.5rem;
-            font-size: 0.85rem;
-            line-height: 1.2rem;
+        #container {
+            display: none;
+            gap: 1em;
+            height: 100vh;
+            width: 100vw;
         }
-        .terminal-input {
-            border-top: 1px dashed rgba(239,229,205,0.15);
-            padding: 0.3rem;
+        @media screen and (min-width: 651px) {
+            #container {
+                grid-template-columns: 0.5fr 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+            #console {
+                grid-column-start: 1;
+                grid-column-end: 3;
+            }
+            #console-output {
+                max-height: calc(50vh - 4em);
+            }
         }
-        input[type="text"] {
-            background: transparent;
-            border: none;
-            color: var(--fg);
-            width: 90%;
-            font-family: inherit;
-            font-size: 0.85rem;
+        @media screen and (max-width: 650px) {
+            #container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+            }
+            #console-output {
+                max-height: calc((100vh / 3) - 4em);
+            }
         }
-        input:focus { outline: none; }
-
-        /* Blinking cursor */
+        .element {
+            padding: 1em;
+            border: 2px dashed var(--fgBorder);
+        }
+        .scrollable {
+            overflow-y: scroll;
+        }
+        #prompt {}
+        #console {}
         .cursor {
-            display: inline-block;
-            width: 0.7ch;
+            height: 1em;
+            width: 0.5em;
             background: var(--fg);
-            animation: blinks 1s step-start infinite;
-        }
-        @keyframes blinks { 50% { background: transparent; } }
-
-        #cursor {
             animation: blink 1s step-end infinite;
         }
         @keyframes blink {
             50% { opacity: 0; }
         }
+        #prompt-cursor {
+            display: none;
+        }
+        #radar {
+            display: flex;
+            flex-direction: column;
+        }
+        #map {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        #sweep {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            transform: translateY(0);
+            animation: scan 1.5s alternate infinite linear;
+        }
+        #map-dot {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 2;
+        }
+        @keyframes scan {
+            100% { transform: translateY(calc(100% - 2em)); }
+        }
+        #sweep, .sweep-color {
+            pointer-events: none;
+        }
+        .sweep-color {
+            width: 100%;
+            height: 2em;
+            background: linear-gradient(transparent, var(--accent), transparent);
+            border-left: 1px solid var(--fg);
+            border-right: 1px solid var(--fg);
+        }
+        #boot-screen {
+            width: 100%;
+            max-width: 500px;
+        }
+        #boot-screen > div > p {
+            margin: 0;
+        }
+        .type-child-boot, .type-child-boot > h3 {
+            text-align: left;
+        }
+        .blip {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: var(--fg);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(239, 229, 205, 0.6); }
+            70%  { box-shadow: 0 0 0 12px rgba(239, 229, 205, 0); }
+        }
+        .blip:hover {
+            box-shadow: 0 0 10px var(--fg);
+            transform: scale(1.3);
+        }
+        .uuid {
+            position: absolute;
+            top: -15px;
+            right: -30px;
+            font-size: 0.6rem;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        #console-input {
+            display: flex;
+            flex-direction: row;
+        }
+        #console-output {
+            overflow-y: auto;
+        }
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            color: var(--fg);
+            width: 100%;
+            height: 1rem;
+            margin-left: 0.5em;
+            font-family: "Quantico", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        input:focus { outline: none; }
     </style>
 </head>
 <body>
-
 <div id="boot">
-    <div>RESULTS MAY VARY TERMINAL</div>
-    <div class="flicker">INITIALIZING...</div>
-    <div class="boot-log" id="boot-log"></div>
-    <small id="start" style="margin-top:1em;opacity:0.6;display:none">
-        Press any key to begin operation<span id="cursor">_</span>
-    </small>
-</div>
-
-<div id="terminal">
-    <div class="terminal-grid">
-        <div class="left-log">
-            <h3>MISSION FEED</h3>
-            <p>[CARNET] Notebook Espionage — top secret scribbles.</p>
-            <p>[ARCHUPDATE] Rolling Breakpoint Initiative — proceed with helmet.</p>
-            <p>[BLURREDWLP] BLur it out!</p>
+    <h3 class="shuffle-boot">RESULTS MAY VARY TERMINAL</h3>
+    <div id="boot-screen">
+        <div class="type-child-boot">
+            <p>INITIALIZING...</p>
+            <p>BOOTING RMV OS v4.0.4...</p>
+            <p>LOADING TACTICOOL MODULES...</p>
+            <p>ESTABLISHING MOSTLY ENCRYPTED LINK...</p>
+            <p>CALIBRATING CRT CURVATURE...</p>
+            <p>LOADING MAP BLIPS...</p>
+            <p>OPERATOR ONLINE...</p>
+            <p>Press any key to begin operation</p>
+            <div class="cursor"></div>
         </div>
-
-        <div class="map">
-            <div class="map-grid" id="map">
-                <div class="sweep"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="prompt" class="element scrollable">
+        <div id="prompt-text">
+            <h3 class="shuffle element"># TERMINAL STATUS</h3>
+            <div class="type-child">
+                <p><span>Connection:</span> Stable</p>
+                <p><span>Signal Noise:</span> Moderate</p>
+                <p><span>Operator:</span> RsltsMV</p>
             </div>
-            <div class="codec" id="codec">Select a mission blip.</div>
+            <h3 class="shuffle element"># MISSION FEED</h3>
+            <div class="type-child">
+                <p>[CARNET] Notebook Espionage — top secret scribbles.</p>
+                <p>[ARCHUPDATE] Rolling Breakpoint Initiative — proceed with helmet.</p>
+                <p>[BLURREDWLP] BLur it out!</p>
+                <small>✔ Mission data loaded. Click on a contact to see its data........</small>
+            </div>
         </div>
-
-        <div class="right-info">
-            <h3>TERMINAL STATUS</h3>
-            <p>Connection: Stable</p>
-            <p>Signal Noise: Moderate</p>
-            <p>Operator: <strong>Results May Vary</strong></p>
+        <div class="cursor" id="prompt-cursor"></div>
+    </div>
+    <div id="radar" class="element">
+        <h3 class="shuffle element"># RMv SCANNER</h3>
+        <div id="map">
+            <div id="sweep"><div class="sweep-color"></div></div>
+            <div id="map-dot"></div>
         </div>
     </div>
-    <div class="terminal-box">
-        <div class="terminal-output" id="term-output"></div>
-        <div class="terminal-input">
-            <span>&gt; </span><input type="text" id="term-input" placeholder="Awaiting command...">
+    <div id="console" class="element">
+        <div id="console-output"></div>
+        <div id="console-input">
+            <div class="cursor"></div>
+            <input type="text" id="term-input" placeholder="Awaiting command...">
         </div>
     </div>
 </div>
-
 <script>
-  const bootLines = [
-    "BOOTING RMV OS v4.0.4...",
-    "LOADING TACTICOOL MODULES...",
-    "ESTABLISHING MOSTLY ENCRYPTED LINK...",
-    "CALIBRATING CRT CURVATURE...",
-    "LOADING MAP BLIPS...",
-    "OPERATOR ONLINE..."
-  ];
   const repos = [
     {
       name: "archupdate",
@@ -336,66 +270,98 @@
 
   ];
 
-  const bootLog = document.getElementById('boot-log');
-  const start = document.getElementById('start');
-  const codec = document.getElementById('codec');
-  const map = document.getElementById('map');
-  const termOutput = document.getElementById('term-output');
+  const typeChild = document.getElementsByClassName("type-child");
+  const typeChildBoot = document.getElementsByClassName("type-child-boot");
+  const shuffleChild = document.getElementsByClassName("shuffle");
+  const shuffleBoot = document.getElementsByClassName("shuffle-boot");
+  const promptCursor = document.getElementById("prompt-cursor");
+  const map = document.getElementById("map-dot");
+  const termOutput = document.getElementById("console-output");
 
-  // boot screen typing effect
-  let bootIndex = 0;
-  function typeBootLine() {
-    if (bootIndex >= bootLines.length) {
-      start.style.display = 'block';
-      return;
-    }
-    const line = document.createElement('div');
-    line.className = 'boot-line';
-    bootLog.appendChild(line);
-
-    const text = bootLines[bootIndex];
-    const len = text.length;
-    let j = 0;
-    const charDelay = 40; // milliseconds per character
-    let lastTime = 0;
-
-    function typeChar(timestamp) {
-      if (!lastTime) lastTime = timestamp;
-      const elapsed = timestamp - lastTime;
-
-      if (elapsed >= charDelay) {
-        line.textContent = text.slice(0, ++j);
-        bootLog.scrollTop = bootLog.scrollHeight;
-        lastTime = timestamp;
-      }
-
-      if (j < len) {
-        requestAnimationFrame(typeChar);
-      } else {
-        bootIndex++;
-        setTimeout(typeBootLine, 100); // Delay before nextline
+  function typeText(element, text, rmv = false, speed = 100, callback = null) {
+    let i = 0;
+    if (rmv) element.textContent = "";
+    function type() {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      } else if (callback) {
+        callback();
       }
     }
-    requestAnimationFrame(typeChar);
+    type();
   }
-  typeBootLine();
+  function typewriterElements(selector, speed = 30, callback = null) {
+    return new Promise((resolve) => {
+      const elements = Array.from(selector.children);
 
-  // Start terminal
-  document.addEventListener('keydown', () => {
-    document.getElementById('boot').style.display = 'none';
-    document.getElementById('terminal').style.display = 'block';
-  }, { once: true });
+      // Masquer tous les enfants au départ
+      elements.forEach(el => {
+        el.style.visibility = "hidden";
+      });
 
-  // UUID generator
-  function genShortUUID() {
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11)
-      .replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      ).slice(0, 8);
+      // Helper: "tape" un texte dans un nœud, et renvoie une Promise
+      function typeNodeText(node, fullText) {
+        return new Promise((res) => {
+          let i = 0;
+          node.textContent = "";
+          function typeChar() {
+            if (i < fullText.length) {
+              node.textContent += fullText.charAt(i++);
+              setTimeout(typeChar, speed);
+            } else {
+              res();
+            }
+          }
+          typeChar();
+        });
+      }
+
+      // Chaîne séquentielle: chaque élément, puis chaque nœud texte
+      (async function run() {
+        for (const el of elements) {
+          el.style.visibility = "visible"; // Afficher la ligne avant d'écrire
+
+          const textNodes = Array.from(el.childNodes).filter(
+            node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ""
+          );
+
+          for (const node of textNodes) {
+            const fullText = node.textContent;
+            await typeNodeText(node, fullText);
+          }
+        }
+      })().then(() => {
+        if (typeof callback === "function") callback();
+        resolve();
+      });
+    });
   }
+  function decryptEffect(element, speed = 40) {
+    return new Promise((resolve) => {
+      const chars = "!<>-_\\/[]{}—=+*^?#________";
+      const text = element.textContent;
+      let iterations = 0;
 
-  // Typing effect for terminal
-  function typeToTerminal(lines, speed = 50) {
+      const interval = setInterval(() => {
+        element.textContent = text
+          .split('')
+          .map((char, i) => {
+            if (i < iterations) return text[i];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('');
+
+        if (iterations >= text.length) {
+          clearInterval(interval);
+          resolve(); // finish promise
+        }
+        iterations += 1 / 3; // adjust reveal speed
+      }, speed);
+    });
+  }
+  function typeToTerminal(lines, speed = 15) {
     let i = 0;
     function typeLine() {
       if (i < lines.length) {
@@ -414,49 +380,72 @@
           }
         }
         typeChar();
-      } else {
-        const cursor = document.createElement('div');
-        cursor.innerHTML = '&gt; <span class="cursor"></span>';
-        termOutput.appendChild(cursor);
-        termOutput.scrollTop = termOutput.scrollHeight;
       }
     }
     typeLine();
   }
 
-  // Add blips
-  repos.forEach(repo => {
-    const blip = document.createElement('div');
-    blip.className = 'blip';
-    const x = 20 + Math.random() * 60;
-    const y = 20 + Math.random() * 60;
-    blip.style.left = `${x}%`;
-    blip.style.top = `${y}%`;
-
-    const label = document.createElement('div');
-    label.className = 'uuid';
-    label.textContent = genShortUUID();
-    blip.appendChild(label);
-
-    blip.addEventListener('mouseenter', () => {
-      codec.style.display = 'block';
-      codec.innerHTML = `<strong>${repo.name}</strong><br>${repo.desc}<br><a href="${repo.url}" target="_blank" style="color:var(--fg);text-decoration:underline;">View Repository</a>`;
+  function startApp() {
+    document.getElementById('boot').style.display = 'none';
+    document.getElementById('container').style.display = 'grid';
+    Array.from(typeChild).forEach((node) => node.style.visibility = "hidden");
+    const promises = Array.from(shuffleChild).map((node) => decryptEffect(node));
+    Promise.allSettled(promises).then(() => {
+      Array.from(typeChild).forEach((node) => {
+        typewriterElements(node, 30, () => promptCursor.style.display = "block");
+      });
+      procDot();
     });
+  }
+  function procDot() {
+    repos.forEach(repo => {
+      const blip = document.createElement('div');
+      blip.className = 'blip';
+      const x = 20 + Math.random() * 60;
+      const y = 20 + Math.random() * 60;
+      blip.style.left = `${x}%`;
+      blip.style.top = `${y}%`;
 
-    blip.addEventListener('mouseleave', () => {
-      codec.innerHTML = "Select a mission blip.";
+      const label = document.createElement('div');
+      label.className = 'uuid';
+      label.textContent = self.crypto.randomUUID().slice(0,6);
+      blip.appendChild(label);
+
+      blip.addEventListener('mouseenter', () => {
+        codec.style.display = 'block';
+        codec.innerHTML = `<strong>${repo.name}</strong><br>${repo.desc}<br><a href="${repo.url}" target="_blank" style="color:var(--fg);text-decoration:underline;">View Repository</a>`;
+      });
+
+      blip.addEventListener('mouseleave', () => {
+        codec.innerHTML = "Select a mission blip.";
+      });
+
+      blip.addEventListener('click', () => {
+        blip.style.background = "#7E8B55";
+        typeToTerminal([
+          `Loading mission data for ${repo.name}...`,
+          `Description: ${repo.desc}`,
+          `Repository link: ${repo.url}`,
+          `Status: READY`,
+          `.`
+        ]);
+      });
+
+      setTimeout(() => {
+        map.appendChild(blip);
+        blip.style.animation = "pulse 2s infinite";
+      }, Math.floor(Math.random() * 1000))
     });
+  }
 
-    blip.addEventListener('click', () => {
-      typeToTerminal([
-        `> Loading mission data for ${repo.name}...`,
-        `> Description: ${repo.desc}`,
-        `> Repository link: ${repo.url}`,
-        `> Status: READY`
-      ]);
-    });
-
-    map.appendChild(blip);
+  Array.from(typeChildBoot).forEach((node) => node.style.visibility = "hidden");
+  const promises = Array.from(shuffleBoot).map((node) => decryptEffect(node));
+  Promise.allSettled(promises).then(() => {
+    const typePromises = Array.from(typeChildBoot).map((node) => typewriterElements(node, 30, () => promptCursor.style.display = "block"));
+    Promise.allSettled(typePromises).then(() => {
+      document.addEventListener('keydown', () => startApp(), { once: true });
+      document.addEventListener('touchend', () => startApp(), { once: true });
+    })
   });
 </script>
 </body>
