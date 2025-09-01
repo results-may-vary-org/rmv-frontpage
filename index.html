@@ -71,7 +71,10 @@
             overflow-y: scroll;
         }
         #prompt {}
-        #console {}
+        #console {
+            display: flex;
+            flex-direction: column;
+        }
         .cursor {
             height: 1em;
             width: 0.5em;
@@ -166,9 +169,11 @@
         #console-input {
             display: flex;
             flex-direction: row;
+            margin: 1em 0;
         }
         #console-output {
             overflow-y: auto;
+            height: 100%;
         }
         input[type="text"] {
             background: transparent;
@@ -343,13 +348,41 @@
         .crt {
             animation: textShadow 1.6s infinite;
         }
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .zoomIn {
+            animation: zoomIn 400ms ease-out both;
+        }
+        h3.zoomIn {
+            margin-bottom: 0;
+        }
+        p.zoomIn {
+            margin-top: 0;
+            text-align: center;
+        }
+        footer {
+            position: relative;
+            bottom: 0;
+        }
+        #term-input {
+            margin: 0 2rem ;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="crt">
     <div id="boot">
-        <h3 class="shuffle-boot">RESULTS MAY VARY TERMINAL</h3>
+        <h3 class="zoomIn">RESULTS MAY VARY</h3>
+        <p class="zoomIn">We craft code so <em>good</em> you'll assume the bugs are <em>intentional features</em>.</p>
         <div id="boot-screen">
             <div class="type-child-boot">
                 <p>INITIALIZING...</p>
@@ -365,7 +398,7 @@
         </div>
     </div>
     <div id="container">
-        <div id="prompt" class="element scrollable">
+        <div id="prompt" class="element scrollable zoomIn">
             <div id="prompt-text">
                 <h3 class="shuffle element"># TERMINAL STATUS</h3>
                 <div class="type-child">
@@ -382,18 +415,23 @@
             </div>
             <div class="cursor" id="prompt-cursor"></div>
         </div>
-        <div id="radar" class="element crt">
+        <div id="radar" class="element crt zoomIn">
             <h3 class="shuffle element"># RMv SCANNER</h3>
             <div id="map">
                 <div id="sweep"><div class="sweep-color"></div></div>
                 <div id="map-dot"></div>
             </div>
         </div>
-        <div id="console" class="element">
+        <div id="console" class="element zoomIn">
             <div id="console-output"></div>
-            <div id="console-input">
-                <div class="cursor"></div>
-                <input type="text" id="term-input" placeholder="Awaiting command...">
+            <div id="footer">
+                <div id="console-input">
+                    <div class="cursor"></div>
+                    <input type="text" id="term-input" placeholder="Awaiting command...">
+                </div>
+                <footer>
+                    &copy; 2025 Results May Vary — professionally unserious since whatever year `git init` seemed like a good idea.
+                </footer>
             </div>
         </div>
     </div>
