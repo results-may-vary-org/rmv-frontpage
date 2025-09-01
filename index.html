@@ -408,7 +408,7 @@
                 </div>
                 <h3 class="shuffle element"># MISSION FEED</h3>
                 <div class="type-child">
-                    <p>|███▓▓░▒░| ok</p>
+                    <p>|███▓▓░▒░▒| ok</p>
                     <small>✔ Mission data loaded. Click on a contact to see its data........</small>
                     <div id="codec"></div>
                 </div>
@@ -485,8 +485,26 @@
       icon: "░",
       url: "https://github.com/bouteillerAlan/grid",
       desc: "Pixel Perfectionists Unite: design with grids, code with grids, win at life."
+    },
+    {
+      name: "dracut-numlock",
+      icon: "▒",
+      url: "https://github.com/bouteillerAlan/dracut-numlock",
+      desc: "Digits ready at boot: a tiny Dracut module that turns Num Lock on during early userspace."
     }
   ];
+  const commandHelp = {
+    help: "Show available commands.",
+    clear: "Clear console output.",
+    echo: "Echo back text. Usage: echo <text>",
+    repos: "List repos (optional filter). Usage: repos [filter]",
+    open: "Open a repo by name. Usage: open <repo-name>",
+    random: "Open a random repo.",
+    whoami: "Display operator and assistant identity.",
+    time: "Show current time and date.",
+    roll: "Roll dice. Usage: roll [NdM] (e.g., roll 2d6)",
+    stats: "Show scanner stats."
+  };
 
   const typeChild = document.getElementsByClassName("type-child");
   const typeChildBoot = document.getElementsByClassName("type-child-boot");
@@ -496,7 +514,7 @@
   const map = document.getElementById("map-dot");
   const termOutput = document.getElementById("console-output");
   const codec = document.getElementById("codec");
-
+  const termInput = document.getElementById("term-input");
   function typeText(element, text, rmv = false, speed = 100, callback = null) {
     let i = 0;
     if (rmv) element.textContent = "";
@@ -613,6 +631,159 @@
     return typingQueue;
   }
 
+  let history = [];
+  let historyIndex = -1;
+  function printPrompt(cmd) {
+    return queueTypeToTerminal([`> ${cmd}`], 10);
+  }
+  function normalize(str) {
+    return (str || "").trim().toLowerCase();
+  }
+  function listRepos(filter) {
+    const f = normalize(filter);
+    const matched = repos.filter(r =>
+      !f || r.name.toLowerCase().includes(f) || r.desc.toLowerCase().includes(f)
+    );
+    if (matched.length === 0) {
+      return [`No repositories matched "${filter}".`];
+    }
+    const lines = ["Repos:"];
+    matched.forEach(r => {
+      lines.push(` ${r.icon} ${r.name} — ${r.desc}`);
+      lines.push(`    ${r.url}`);
+    });
+    return lines;
+  }
+  function rollDice(spec = "1d6") {
+    const m = /^(\d*)d(\d+)$/.exec(spec.trim());
+    if (!m) return { lines: [`Invalid dice spec "${spec}". Try NdM like 2d6.`] };
+    const n = Math.max(1, parseInt(m[1] || "1", 10));
+    const sides = Math.max(2, parseInt(m[2], 10));
+    const rolls = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * sides));
+    const total = rolls.reduce((a, b) => a + b, 0);
+    return { lines: [`Rolled ${spec}: [${rolls.join(", ")}] = ${total}`] };
+  }
+  async function analyzeAndRespond(raw) {
+    const input = raw || "";
+    const [cmd, ...rest] = input.trim().split(/\s+/);
+    const argStr = rest.join(" ");
+
+    if (!cmd) return; // ignore empty
+
+    switch (normalize(cmd)) {
+      case "help": {
+        const lines = ["Available commands:"].concat(
+          Object.entries(commandHelp).map(([k, v]) => ` - ${k}: ${v}`)
+        );
+        await queueTypeToTerminal(lines);
+        break;
+      }
+      case "clear": {
+        termOutput.innerHTML = "";
+        break;
+      }
+      case "echo": {
+        await queueTypeToTerminal([argStr || "(nothing to echo)"]);
+        break;
+      }
+      case "repos": {
+        await queueTypeToTerminal(listRepos(argStr));
+        break;
+      }
+      case "open": {
+        if (!argStr) {
+          await queueTypeToTerminal(['Usage: open <repo-name>']);
+          break;
+        }
+        const target = repos.find(r => r.name.toLowerCase() === argStr.toLowerCase());
+        if (!target) {
+          await queueTypeToTerminal([`Repo "${argStr}" not found. Try: repos`]);
+        } else {
+          await queueTypeToTerminal([`Opening ${target.name}...`, target.url]);
+          window.open(target.url, "_blank", "noopener");
+        }
+        break;
+      }
+      case "random": {
+        const target = repos[Math.floor(Math.random() * repos.length)];
+        await queueTypeToTerminal([`Lucky pick: ${target.name}`, `Opening ${target.url} ...`]);
+        window.open(target.url, "_blank", "noopener");
+        break;
+      }
+      case "whoami": {
+        await queueTypeToTerminal([
+          "Operator: RsltsMV",
+          "Assistant: AI Assistant",
+          "Link: mostly encrypted, vibes-based routing online."
+        ]);
+        break;
+      }
+      case "time": {
+        const now = new Date();
+        await queueTypeToTerminal([now.toString()]);
+        break;
+      }
+      case "roll": {
+        const spec = argStr || "1d6";
+        const { lines } = rollDice(spec);
+        await queueTypeToTerminal(lines);
+        break;
+      }
+      case "stats": {
+        const total = repos.length;
+        const checked = document.querySelectorAll('.blip-checked').length;
+        await queueTypeToTerminal([
+          `Scanner contacts: ${total}`,
+          `Tagged as READY: ${checked}`,
+          `Unprocessed: ${Math.max(0, total - checked)}`
+        ]);
+        break;
+      }
+      default: {
+        await queueTypeToTerminal([
+          `Unknown command: ${cmd}`,
+          `Type "help" for available commands.`
+        ]);
+      }
+    }
+  }
+  function setupTerminal() {
+    // Focus handling
+    termInput.addEventListener("focus", () => {
+      termInput.placeholder = "Awaiting command...";
+    });
+
+    // History + submit
+    termInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const value = termInput.value.trim();
+        if (value.length === 0) return;
+
+        history.push(value);
+        historyIndex = history.length;
+        await printPrompt(value);
+        termInput.value = "";
+        analyzeAndRespond(value);
+      } else if (e.key === "ArrowUp") {
+        if (history.length > 0) {
+          historyIndex = Math.max(0, historyIndex - 1);
+          termInput.value = history[historyIndex] || "";
+          // Move caret to end
+          requestAnimationFrame(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length));
+        }
+        e.preventDefault();
+      } else if (e.key === "ArrowDown") {
+        if (history.length > 0) {
+          historyIndex = Math.min(history.length, historyIndex + 1);
+          termInput.value = historyIndex === history.length ? "" : (history[historyIndex] || "");
+          requestAnimationFrame(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length));
+        }
+        e.preventDefault();
+      }
+    });
+  }
+
+
   function startApp() {
     document.getElementById('boot').style.display = 'none';
     document.getElementById('container').style.display = 'grid';
@@ -623,6 +794,11 @@
         typewriterElements(node, 30, () => promptCursor.style.display = "block");
       });
       procDot();
+      setupTerminal();
+      termInput.focus();
+      queueTypeToTerminal([
+        "Type 'help' to see available commands.",
+      ], 10);
     });
   }
   function procDot() {
