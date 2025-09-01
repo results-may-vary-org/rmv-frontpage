@@ -491,6 +491,12 @@
       icon: "▒",
       url: "https://github.com/bouteillerAlan/dracut-numlock",
       desc: "Digits ready at boot: a tiny Dracut module that turns Num Lock on during early userspace."
+    },
+    {
+      name: "Hey you", // keep it the last to keep pop() working
+      icon: "",
+      url: "",
+      desc: "you should try the konami code c:"
     }
   ];
   const commandHelp = {
@@ -647,6 +653,7 @@
     if (matched.length === 0) {
       return [`No repositories matched "${filter}".`];
     }
+    matched.pop(); // remove the easter egg
     const lines = ["Repos:"];
     matched.forEach(r => {
       lines.push(` ${r.icon} ${r.name} — ${r.desc}`);
@@ -783,7 +790,6 @@
     });
   }
 
-
   function startApp() {
     document.getElementById('boot').style.display = 'none';
     document.getElementById('container').style.display = 'grid';
@@ -854,6 +860,85 @@
       document.addEventListener('touchend', () => startApp(), { once: true });
     })
   });
+
+  (function setupKonami() {
+    const sequence = [
+      "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
+      "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
+      "b","a"
+    ];
+    let position = 0;
+
+    function launchVideoEasterEgg() {
+      // Avoid multiple activations
+      if (document.getElementById('egg-overlay')) return;
+
+      const overlay = document.createElement('div');
+      overlay.id = 'egg-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.background = 'black';
+      overlay.style.zIndex = '9999';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+
+      // Keep aspect ratio and cover most of the screen
+      const wrapper = document.createElement('div');
+      wrapper.style.width = '100vw';
+      wrapper.style.height = '100vh';
+      wrapper.classList.add("crt");
+
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '100%';
+      iframe.style.border = '0';
+      iframe.allow = 'autoplay; fullscreen';
+      // note: autoplay is more reliable when muted due to browser policies
+      // but this joke is a joke only with the sound :)
+      iframe.src = 'https://www.youtube.com/embed/E4WlUXrJgy4?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1';
+
+      wrapper.appendChild(iframe);
+      overlay.appendChild(wrapper);
+      document.body.appendChild(overlay);
+
+      const cleanup = () => {
+        document.removeEventListener('keydown', onEsc);
+        overlay.removeEventListener('click', cleanup);
+        if (document.fullscreenElement && document.fullscreenElement === overlay) {
+          document.exitFullscreen().catch(() => {});
+        }
+        overlay.remove();
+      };
+
+      const onEsc = (e) => {
+        if (e.key === 'Escape') cleanup();
+      };
+
+      document.addEventListener('keydown', onEsc);
+      overlay.addEventListener('click', cleanup);
+
+      // Try to request fullscreen on the overlay
+      if (overlay.requestFullscreen) {
+        overlay.requestFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === sequence[position]) {
+        position += 1;
+        if (position === sequence.length) {
+          position = 0;
+          launchVideoEasterEgg();
+          queueTypeToTerminal(["You got Rickrolled? That happened to the best 😉"])
+        }
+      } else {
+        // If mismatch but key could be start of sequence, reset to 1 or 0
+        position = (key === sequence[0]) ? 1 : 0;
+      }
+    });
+  })();
 </script>
 </body>
 </html>
