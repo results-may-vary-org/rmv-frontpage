@@ -2,954 +2,186 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Results May Vary Terminal</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-        :root {
-            --bg: #101010;
-            --fg: rgb(239, 229, 205);
-            --fgBorder: rgba(239,229,205,0.15);
-            --secondary: rgb(217, 207, 186);
-            --accent: rgba(82, 78, 71, 0.65);
-            --green: #7E8B55;
-        }
-        html, body {
-            margin: 0; padding: 0;
-            background: var(--bg);
-            color: var(--fg);
-            font-family: "Quantico", sans-serif;
-            font-weight: 400;
-            font-style: normal;
-        }
-        h3 {
-            margin-top: 0;
-        }
-        p > span {
-            font-weight: 700;
-        }
-        #boot {
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        #container {
-            display: none;
-            gap: 1em;
-            height: 100vh;
-            width: 100vw;
-        }
-        @media screen and (min-width: 651px) {
-            #container {
-                grid-template-columns: 0.5fr 1fr;
-                grid-template-rows: 1fr 1fr;
-            }
-            #console {
-                grid-column-start: 1;
-                grid-column-end: 3;
-            }
-            #console-output {
-                max-height: calc(50vh - 4em);
-            }
-        }
-        @media screen and (max-width: 650px) {
-            #container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr 1fr 1fr;
-            }
-            #console-output {
-                max-height: calc((100vh / 3) - 4em);
-            }
-        }
-        .element {
-            padding: 1em;
-            border: 2px dashed var(--fgBorder);
-        }
-        .scrollable {
-            overflow-y: scroll;
-        }
-        #prompt {}
-        #console {
-            display: flex;
-            flex-direction: column;
-        }
-        .cursor {
-            height: 1em;
-            width: 0.5em;
-            background: var(--fg);
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-        #prompt-cursor {
-            display: none;
-        }
-        #radar {
-            display: flex;
-            flex-direction: column;
-        }
-        #map {
-            position: relative;
-            height: 100%;
-            width: 100%;
-        }
-        #sweep {
-            position: absolute;
-            inset: 0;
-            z-index: 3;
-            transform: translateY(0);
-            animation: scan 1.5s alternate infinite linear;
-        }
-        #map-dot {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            place-items: center;
-            z-index: 2;
-        }
-        @keyframes scan {
-            100% { transform: translateY(calc(100% - 2em)); }
-        }
-        #sweep, .sweep-color {
-            pointer-events: none;
-        }
-        .sweep-color {
-            width: 100%;
-            height: 1em;
-            background: linear-gradient(transparent, var(--accent), transparent);
-            border-left: 1px solid var(--fg);
-            border-right: 1px solid var(--fg);
-        }
-        #boot-screen {
-            width: 100%;
-            max-width: 500px;
-        }
-        #boot-screen > div > p {
-            margin: 0;
-        }
-        .type-child-boot, .type-child-boot > h3 {
-            text-align: left;
-        }
-        .blip {
-            position: absolute;
-            width: 14px; height: 14px;
-            background: var(--fg);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        @keyframes pulse {
-            0%   { box-shadow: 0 0 0 0 rgba(239, 229, 205, 0.6); }
-            70%  { box-shadow: 0 0 0 12px rgba(239, 229, 205, 0); }
-        }
-        .blip:hover {
-            box-shadow: 0 0 10px var(--fg);
-            transform: scale(1.3);
-        }
-        .blip-checked {
-            background: var(--green);
-        }
-        .blip-checked:hover {
-            box-shadow: 0 0 10px var(--green);
-        }
-        @keyframes pulse-ok {
-            0%   { box-shadow: 0 0 0 0 rgba(126,139,85, 0.6); }
-            70%  { box-shadow: 0 0 0 12px rgba(126,139,85, 0); }
-        }
-        .uuid {
-            position: absolute;
-            top: -15px;
-            right: -55px;
-            font-size: 0.6rem;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        #console-input {
-            display: flex;
-            flex-direction: row;
-            margin: 1em 0;
-        }
-        #console-output {
-            overflow-y: auto;
-            height: 100%;
-        }
-        input[type="text"] {
-            background: transparent;
-            border: none;
-            color: var(--fg);
-            width: 100%;
-            height: 1rem;
-            margin-left: 0.5em;
-            font-family: "Quantico", sans-serif;
-            font-weight: 400;
-            font-style: normal;
-        }
-        input:focus { outline: none; }
-        /*CT effect is made by Alec Lownes :+1:*/
-        @keyframes flicker {
-            0% {
-                opacity: 0.27861;
-            }
-            5% {
-                opacity: 0.34769;
-            }
-            10% {
-                opacity: 0.23604;
-            }
-            15% {
-                opacity: 0.90626;
-            }
-            20% {
-                opacity: 0.18128;
-            }
-            25% {
-                opacity: 0.83891;
-            }
-            30% {
-                opacity: 0.65583;
-            }
-            35% {
-                opacity: 0.67807;
-            }
-            40% {
-                opacity: 0.26559;
-            }
-            45% {
-                opacity: 0.84693;
-            }
-            50% {
-                opacity: 0.96019;
-            }
-            55% {
-                opacity: 0.08594;
-            }
-            60% {
-                opacity: 0.20313;
-            }
-            65% {
-                opacity: 0.71988;
-            }
-            70% {
-                opacity: 0.53455;
-            }
-            75% {
-                opacity: 0.37288;
-            }
-            80% {
-                opacity: 0.71428;
-            }
-            85% {
-                opacity: 0.70419;
-            }
-            90% {
-                opacity: 0.7003;
-            }
-            95% {
-                opacity: 0.36108;
-            }
-            100% {
-                opacity: 0.24387;
-            }
-        }
-        @keyframes textShadow {
-            0% {
-                text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            5% {
-                text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            10% {
-                text-shadow: 0.02956275843481219px 0 1px rgba(0,30,255,0.5), -0.02956275843481219px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            15% {
-                text-shadow: 0.40218538552878136px 0 1px rgba(0,30,255,0.5), -0.40218538552878136px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            20% {
-                text-shadow: 3.4794037899852017px 0 1px rgba(0,30,255,0.5), -3.4794037899852017px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            25% {
-                text-shadow: 1.6125630401149584px 0 1px rgba(0,30,255,0.5), -1.6125630401149584px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            30% {
-                text-shadow: 0.7015590085143956px 0 1px rgba(0,30,255,0.5), -0.7015590085143956px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            35% {
-                text-shadow: 3.896914047650351px 0 1px rgba(0,30,255,0.5), -3.896914047650351px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            40% {
-                text-shadow: 3.870905614848819px 0 1px rgba(0,30,255,0.5), -3.870905614848819px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            45% {
-                text-shadow: 2.231056963361899px 0 1px rgba(0,30,255,0.5), -2.231056963361899px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            50% {
-                text-shadow: 0.08084290417898504px 0 1px rgba(0,30,255,0.5), -0.08084290417898504px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            55% {
-                text-shadow: 2.3758461067427543px 0 1px rgba(0,30,255,0.5), -2.3758461067427543px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            60% {
-                text-shadow: 2.202193051050636px 0 1px rgba(0,30,255,0.5), -2.202193051050636px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            65% {
-                text-shadow: 2.8638780614874975px 0 1px rgba(0,30,255,0.5), -2.8638780614874975px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            70% {
-                text-shadow: 0.48874025155497314px 0 1px rgba(0,30,255,0.5), -0.48874025155497314px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            75% {
-                text-shadow: 1.8948491305757957px 0 1px rgba(0,30,255,0.5), -1.8948491305757957px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            80% {
-                text-shadow: 0.0833037308038857px 0 1px rgba(0,30,255,0.5), -0.0833037308038857px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            85% {
-                text-shadow: 0.09769827255241735px 0 1px rgba(0,30,255,0.5), -0.09769827255241735px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            90% {
-                text-shadow: 3.443339761481782px 0 1px rgba(0,30,255,0.5), -3.443339761481782px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            95% {
-                text-shadow: 2.1841838852799786px 0 1px rgba(0,30,255,0.5), -2.1841838852799786px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            100% {
-                text-shadow: 2.6208764473832513px 0 1px rgba(0,30,255,0.5), -2.6208764473832513px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-        }
-        .crt::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: rgba(18, 16, 16, 0.1);
-            opacity: 0;
-            z-index: 2;
-            pointer-events: none;
-            animation: flicker 0.15s infinite;
-        }
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-        .crt {
-            animation: textShadow 1.6s infinite;
-        }
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.85);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .zoomIn {
-            animation: zoomIn 400ms ease-out both;
-        }
-        h3.zoomIn {
-            margin-bottom: 0;
-        }
-        p.zoomIn {
-            margin-top: 0;
-            text-align: center;
-        }
-        footer {
-            position: relative;
-            bottom: 0;
-        }
-        #term-input {
-            margin: 0 2rem ;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMv - Results May Vary | Focused Open Source Projects</title>
+    <meta name="description" content="RMv creates focused open source software that does one thing exceptionally well. 20+ years of Linux experience crafting accessible, uncluttered tools for everyone.">
+    <meta name="keywords" content="open source, linux software, minimal design, focused development, github projects, clean code, accessibility, rmv studio">
+    <meta name="author" content="RMv Studio">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rmv.studio/">
+    <meta property="og:title" content="RMv - Results May Vary | Focused Open Source Projects">
+    <meta property="og:description" content="Creating focused open source software that does one thing exceptionally well. Accessible tools for everyone.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://rmv.studio/">
+    <meta property="twitter:title" content="RMv - Results May Vary | Focused Open Source Projects">
+    <meta property="twitter:description" content="Creating focused open source software that does one thing exceptionally well. Accessible tools for everyone.">
+
+    <link rel="canonical" href="https://rmv.studio/">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/snow.css">
 </head>
 <body>
-<div class="crt">
-    <div id="boot">
-        <h3 class="zoomIn">RESULTS MAY VARY</h3>
-        <p class="zoomIn">We craft code so <em>good</em> you'll assume the bugs are <em>intentional features</em>.</p>
-        <div id="boot-screen">
-            <div class="type-child-boot">
-                <p>INITIALIZING...</p>
-                <p>BOOTING RMV OS v4.0.4...</p>
-                <p>LOADING TACTICOOL MODULES...</p>
-                <p>ESTABLISHING MOSTLY ENCRYPTED LINK...</p>
-                <p>CALIBRATING CRT CURVATURE...</p>
-                <p>LOADING MAP BLIPS...</p>
-                <p>OPERATOR ONLINE...</p>
-                <p>Press any key to begin operation</p>
-                <div class="cursor"></div>
-            </div>
+
+    <div class="noise-container">
+        <div class="noise"></div>
+    </div>
+
+    <div class="scrolling-banner">
+        <div class="banner-content">
+           check our latest project > <a href="https://github.com/results-may-vary-org/tape" target="_blank">tape</a> • <i>we craft code so good you'll assume the bugs are intentional features</i> •
         </div>
     </div>
-    <div id="container">
-        <div id="prompt" class="element scrollable zoomIn">
-            <div id="prompt-text">
-                <h3 class="shuffle element"># TERMINAL STATUS</h3>
-                <div class="type-child">
-                    <p><span>Connection:</span> Stable</p>
-                    <p><span>Signal Noise:</span> Moderate</p>
-                    <p><span>Operator:</span> RsltsMV</p>
-                </div>
-                <h3 class="shuffle element"># MISSION FEED</h3>
-                <div class="type-child">
-                    <p>|▓███▓▓░▒░▒| ok</p>
-                    <small>✔ Mission data loaded. Click on a contact to see its data........</small>
-                    <div id="codec"></div>
+
+    <header class="main-header">
+        <div class="header-left">
+            <span class="location">* <a href="https://github.com/results-may-vary-org" target="_blank" class="location-link">github.com/results-may-vary-org</a></span>
+        </div>
+        <div class="header-center">
+            <span class="tagline">
+                <span class="tagline-letter">r</span><span class="tagline-letter">e</span><span class="tagline-letter">s</span><span class="tagline-letter">u</span><span class="tagline-letter">l</span><span class="tagline-letter">t</span><span class="tagline-letter">s</span> <span class="tagline-letter">m</span><span class="tagline-letter">a</span><span class="tagline-letter">y</span> <span class="tagline-letter">v</span><span class="tagline-letter">a</span><span class="tagline-letter">r</span><span class="tagline-letter">y</span>
+            </span>
+        </div>
+        <div class="header-right">
+            <nav>
+                <a href="#projects">projects</a>
+                <a href="#info-grid">about</a>
+                <a href="https://todo.rmv.a2n.dev/" target="_blank">todo</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="logo">
+                <span class="logo-r logo-letter">R</span><span class="logo-m logo-letter">M</span><span class="logo-v logo-letter">v</span>
+            </div>
+        </section>
+
+        <section id="info-grid" class="info-grid">
+            <div class="info-left">
+                <h2 class="studio-name">RMv</h2>
+                <p class="description">
+                    RMv serves as a unified home for focused open source projects that prioritize substance over bloat. Each tool is designed with intention: clean interfaces, essential features, and thoughtful user experiences that respect your time and system resources.
+                </p>
+                <p class="philosophy">
+                    With 20+ years navigating the Linux ecosystem, I believe great software should do one thing exceptionally well. Open source democratizes access to quality tools, ensuring everyone can benefit from technological solutions regardless of their economic situation. No feature creep, no unnecessary complexity—just purposeful code that solves real problems.
+                </p>
+                <div class="studio-links">
+                    <a href="https://github.com/results-may-vary-org" target="_blank" class="link">check our projects</a>
                 </div>
             </div>
-            <div class="cursor" id="prompt-cursor"></div>
-        </div>
-        <div id="radar" class="element crt zoomIn">
-            <h3 class="shuffle element"># RMv SCANNER</h3>
-            <div id="map">
-                <div id="sweep"><div class="sweep-color"></div></div>
-                <div id="map-dot"></div>
-            </div>
-        </div>
-        <div id="console" class="element zoomIn">
-            <div id="console-output"></div>
-            <div id="footer">
-                <div id="console-input">
-                    <div class="cursor"></div>
-                    <input type="text" id="term-input" placeholder="Awaiting command...">
+
+            <div class="info-right">
+                <div class="contact-info">
+                    <h3>find us</h3>
+                    <p><a href="https://github.com/results-may-vary-org" target="_blank" class="contact-info-link">github.com/results-may-vary-org</a></p>
+                    <p><a href="https://aur.archlinux.org/packages?K=a2n&SeB=m" target="_blank" class="contact-info-link">AUR packages</a></p>
+                    <p><a href="https://www.pling.com/u/a2-n" target="_blank" class="contact-info-link">KDE Store</a></p>
                 </div>
-                <footer>
-                    &copy; 2025 Results May Vary — professionally unserious since whatever year `git init` seemed like a good idea.
-                </footer>
+
+                <div class="hours">
+                    <h3>development approach</h3>
+                    <p>focused projects</p>
+                    <p>one purpose, done well</p>
+
+                    <p>clean design</p>
+                    <p>no bloat, no feature creep</p>
+
+                    <p>accessible tools</p>
+                    <p>quality software for everyone</p>
+
+                    <p>linux native</p>
+                    <p>20+ years of experience</p>
+                </div>
+
+                <div class="actions">
+                    <h3>collaborate</h3>
+                    <p><a href="https://github.com/results-may-vary-org" target="_blank" class="action-link">contribute (→)</a></p>
+                    <p><a href="https://github.com/sponsors" target="_blank" class="action-link">sponsor (→)</a></p>
+                    <p><a href="https://todo.rmv.a2n.dev/" target="_blank" class="action-link">roadmap (→)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <div class="projects-header">
+                <h2>Our Projects</h2>
+            </div>
+
+            <div class="projects-grid">
+                <a href="https://github.com/results-may-vary-org/tape" target="_blank" class="project-card">
+                    <h3>Tape</h3>
+                    <p>Markdown note-taking tool</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/blurredwallpaper" target="_blank" class="project-card">
+                    <h3>Blurred Wallpaper</h3>
+                    <p>Dynamic wallpaper blur for KDE</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/archupdate" target="_blank" class="project-card">
+                    <h3>Arch Update</h3>
+                    <p>System update notifier</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/kuro" target="_blank" class="project-card">
+                    <h3>Kuro</h3>
+                    <p>KDE Plasma loading screen</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/dracut-numlock" target="_blank" class="project-card">
+                    <h3>Dracut Numlock</h3>
+                    <p>Boot-time numlock activation</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/docker-companion" target="_blank" class="project-card">
+                    <h3>Docker Companion</h3>
+                    <p>Container management helper</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/earbud-companion" target="_blank" class="project-card">
+                    <h3>Earbud Companion</h3>
+                    <p>Audio device control tool</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/surf" target="_blank" class="project-card">
+                    <h3>Surf</h3>
+                    <p>Keyboard-driven browser homepage</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <span class="footer-logo-text">results may vary</span>
+                </div>
+                <div class="footer-credits">
+                    <p>Design & code by Bouteiller A2N Alan</p>
+                    <p class="gpg-info">GPG # 6A2E CC8A 396F 8A94 3A10 9A1E 0F11 C2A6 BF79 111E</p>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <div class="footer-contact">
+                    <p>contactez-moi : <a href="mailto:hi@a2n.dev" class="contact-link">hi@a2n.dev</a></p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/results-may-vary-org" target="_blank" class="footer-link">github</a>
+                    <a href="https://www.pling.com/u/a2-n" target="_blank" class="footer-link">kde store</a>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<script>
-  const repos = [
-    {
-      name: "surf",
-      icon: "▓",
-      url: "https://github.com/results-may-vary-org/surf",
-      desc: "Keep surfing but with keyboard."
-    },
-    {
-      name: "archupdate",
-      icon: "█",
-      url: "https://github.com/bouteillerAlan/archupdate",
-      desc: "Rolling Breakpoint Initiative: update Arch, break Arch, repeat."
-    },
-    {
-      name: "tape",
-      icon: "█",
-      url: "https://github.com/results-may-vary-org/tape",
-      desc: "Top-Secret Scribbles: capture your fleeting genius before it vanishes."
-    },
-    {
-      name: "docker-companion",
-      icon: "█",
-      url: "https://github.com/bouteillerAlan/docker-companion",
-      desc: "Dock & Roll: a friendly docker sidekick chilling in your KDE 6 tray."
-    },
-    {
-      name: "blurredwallpaper",
-      icon: "▓",
-      url: "https://github.com/bouteillerAlan/blurredwallpaper",
-      desc: "Zen Mode Activated: blur the chaos, focus on the task, KDE 6 style."
-    },
-    {
-      name: "earbud-companion",
-      icon: "▓",
-      url: "https://github.com/bouteillerAlan/earbud-companion",
-      desc: "Tiny Buddies, Big Presence: show off your earbuds in the tray with flair."
-    },
-    {
-      name: "dockolor",
-      icon: "░",
-      url: "https://github.com/bouteillerAlan/dockolor",
-      desc: "Color Me Dock: spice up your `docker ps` with a splash of sanity."
-    },
-    {
-      name: "postier",
-      icon: "▒",
-      url: "https://github.com/bouteillerAlan/postier",
-      desc: "Parcel Pandemonium: postal toolkit for delivering chaos with style."
-    },
-    {
-      name: "grid",
-      icon: "░",
-      url: "https://github.com/bouteillerAlan/grid",
-      desc: "Pixel Perfectionists Unite: design with grids, code with grids, win at life."
-    },
-    {
-      name: "dracut-numlock",
-      icon: "▒",
-      url: "https://github.com/bouteillerAlan/dracut-numlock",
-      desc: "Digits ready at boot: a tiny Dracut module that turns Num Lock on during early userspace."
-    },
-    {
-      name: "Hey you", // keep it the last to keep pop() working
-      icon: "",
-      url: "",
-      desc: "you should try the konami code c:"
-    }
-  ];
-  const commandHelp = {
-    help: "Show available commands.",
-    clear: "Clear console output.",
-    echo: "Echo back text. Usage: echo <text>",
-    repos: "List repos (optional filter). Usage: repos [filter]",
-    open: "Open a repo by name. Usage: open <repo-name>",
-    random: "Open a random repo.",
-    whoami: "Display operator and assistant identity.",
-    time: "Show current time and date.",
-    roll: "Roll dice. Usage: roll [NdM] (e.g., roll 2d6)",
-    stats: "Show scanner stats."
-  };
+    </footer>
 
-  const typeChild = document.getElementsByClassName("type-child");
-  const typeChildBoot = document.getElementsByClassName("type-child-boot");
-  const shuffleChild = document.getElementsByClassName("shuffle");
-  const shuffleBoot = document.getElementsByClassName("shuffle-boot");
-  const promptCursor = document.getElementById("prompt-cursor");
-  const map = document.getElementById("map-dot");
-  const termOutput = document.getElementById("console-output");
-  const codec = document.getElementById("codec");
-  const termInput = document.getElementById("term-input");
-  function typeText(element, text, rmv = false, speed = 100, callback = null) {
-    let i = 0;
-    if (rmv) element.textContent = "";
-    function type() {
-      if (i < text.length) {
-        element.textContent += text.charAt(i);
-        i++;
-        setTimeout(type, speed);
-      } else if (callback) {
-        callback();
-      }
-    }
-    type();
-  }
-  function typewriterElements(selector, speed = 30, callback = null) {
-    return new Promise((resolve) => {
-      const elements = Array.from(selector.children);
-
-      // Masquer tous les enfants au départ
-      elements.forEach(el => {
-        el.style.visibility = "hidden";
-      });
-
-      // Helper: "tape" un texte dans un nœud, et renvoie une Promise
-      function typeNodeText(node, fullText) {
-        return new Promise((res) => {
-          let i = 0;
-          node.textContent = "";
-          function typeChar() {
-            if (i < fullText.length) {
-              node.textContent += fullText.charAt(i++);
-              setTimeout(typeChar, speed);
-            } else {
-              res();
-            }
-          }
-          typeChar();
-        });
-      }
-
-      // Chaîne séquentielle: chaque élément, puis chaque nœud texte
-      (async function run() {
-        for (const el of elements) {
-          el.style.visibility = "visible"; // Afficher la ligne avant d'écrire
-
-          const textNodes = Array.from(el.childNodes).filter(
-            node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ""
-          );
-
-          for (const node of textNodes) {
-            const fullText = node.textContent;
-            await typeNodeText(node, fullText);
-          }
-        }
-      })().then(() => {
-        if (typeof callback === "function") callback();
-        resolve();
-      });
-    });
-  }
-  function decryptEffect(element, speed = 40) {
-    return new Promise((resolve) => {
-      const chars = "!<>-_\\/[]{}—=+*^?#________";
-      const text = element.textContent;
-      let iterations = 0;
-
-      const interval = setInterval(() => {
-        element.textContent = text
-          .split('')
-          .map((char, i) => {
-            if (i < iterations) return text[i];
-            return chars[Math.floor(Math.random() * chars.length)];
-          })
-          .join('');
-
-        if (iterations >= text.length) {
-          clearInterval(interval);
-          resolve(); // finish promise
-        }
-        iterations += 1 / 3; // adjust reveal speed
-      }, speed);
-    });
-  }
-  function typeToTerminal(lines, speed = 15) {
-    return new Promise(resolve => {
-      let i = 0;
-      function typeLine() {
-        if (i < lines.length) {
-          const line = document.createElement('div');
-          termOutput.appendChild(line);
-          let j = 0;
-          function typeChar() {
-            if (j < lines[i].length) {
-              line.textContent += lines[i][j];
-              j++;
-              setTimeout(typeChar, speed);
-              termOutput.scrollTop = termOutput.scrollHeight;
-            } else {
-              i++;
-              setTimeout(typeLine, 150);
-            }
-          }
-          typeChar();
-        } else {
-          resolve(); // <-- resolves when all lines are finished
-        }
-      }
-      typeLine();
-    });
-  }
-  let typingQueue = Promise.resolve();
-  function queueTypeToTerminal(lines, speed = 15) {
-    typingQueue = typingQueue.then(() => typeToTerminal(lines, speed));
-    return typingQueue;
-  }
-
-  let history = [];
-  let historyIndex = -1;
-  function printPrompt(cmd) {
-    return queueTypeToTerminal([`> ${cmd}`], 10);
-  }
-  function normalize(str) {
-    return (str || "").trim().toLowerCase();
-  }
-  function listRepos(filter) {
-    const f = normalize(filter);
-    const matched = repos.filter(r =>
-      !f || r.name.toLowerCase().includes(f) || r.desc.toLowerCase().includes(f)
-    );
-    if (matched.length === 0) {
-      return [`No repositories matched "${filter}".`];
-    }
-    matched.pop(); // remove the easter egg
-    const lines = ["Repos:"];
-    matched.forEach(r => {
-      lines.push(` ${r.icon} ${r.name} — ${r.desc}`);
-      lines.push(`    ${r.url}`);
-    });
-    return lines;
-  }
-  function rollDice(spec = "1d6") {
-    const m = /^(\d*)d(\d+)$/.exec(spec.trim());
-    if (!m) return { lines: [`Invalid dice spec "${spec}". Try NdM like 2d6.`] };
-    const n = Math.max(1, parseInt(m[1] || "1", 10));
-    const sides = Math.max(2, parseInt(m[2], 10));
-    const rolls = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * sides));
-    const total = rolls.reduce((a, b) => a + b, 0);
-    return { lines: [`Rolled ${spec}: [${rolls.join(", ")}] = ${total}`] };
-  }
-  async function analyzeAndRespond(raw) {
-    const input = raw || "";
-    const [cmd, ...rest] = input.trim().split(/\s+/);
-    const argStr = rest.join(" ");
-
-    if (!cmd) return; // ignore empty
-
-    switch (normalize(cmd)) {
-      case "help": {
-        const lines = ["Available commands:"].concat(
-          Object.entries(commandHelp).map(([k, v]) => ` - ${k}: ${v}`)
-        );
-        await queueTypeToTerminal(lines);
-        break;
-      }
-      case "clear": {
-        termOutput.innerHTML = "";
-        break;
-      }
-      case "echo": {
-        await queueTypeToTerminal([argStr || "(nothing to echo)"]);
-        break;
-      }
-      case "repos": {
-        await queueTypeToTerminal(listRepos(argStr));
-        break;
-      }
-      case "open": {
-        if (!argStr) {
-          await queueTypeToTerminal(['Usage: open <repo-name>']);
-          break;
-        }
-        const target = repos.find(r => r.name.toLowerCase() === argStr.toLowerCase());
-        if (!target) {
-          await queueTypeToTerminal([`Repo "${argStr}" not found. Try: repos`]);
-        } else {
-          await queueTypeToTerminal([`Opening ${target.name}...`, target.url]);
-          window.open(target.url, "_blank", "noopener");
-        }
-        break;
-      }
-      case "random": {
-        const target = repos[Math.floor(Math.random() * repos.length)];
-        await queueTypeToTerminal([`Lucky pick: ${target.name}`, `Opening ${target.url} ...`]);
-        window.open(target.url, "_blank", "noopener");
-        break;
-      }
-      case "whoami": {
-        await queueTypeToTerminal([
-          "Operator: RsltsMV",
-          "Assistant: AI Assistant",
-          "Link: mostly encrypted, vibes-based routing online."
-        ]);
-        break;
-      }
-      case "time": {
-        const now = new Date();
-        await queueTypeToTerminal([now.toString()]);
-        break;
-      }
-      case "roll": {
-        const spec = argStr || "1d6";
-        const { lines } = rollDice(spec);
-        await queueTypeToTerminal(lines);
-        break;
-      }
-      case "stats": {
-        const total = repos.length;
-        const checked = document.querySelectorAll('.blip-checked').length;
-        await queueTypeToTerminal([
-          `Scanner contacts: ${total}`,
-          `Tagged as READY: ${checked}`,
-          `Unprocessed: ${Math.max(0, total - checked)}`
-        ]);
-        break;
-      }
-      default: {
-        await queueTypeToTerminal([
-          `Unknown command: ${cmd}`,
-          `Type "help" for available commands.`
-        ]);
-      }
-    }
-  }
-  function setupTerminal() {
-    // Focus handling
-    termInput.addEventListener("focus", () => {
-      termInput.placeholder = "Awaiting command...";
-    });
-
-    // History + submit
-    termInput.addEventListener("keydown", async (e) => {
-      if (e.key === "Enter") {
-        const value = termInput.value.trim();
-        if (value.length === 0) return;
-
-        history.push(value);
-        historyIndex = history.length;
-        await printPrompt(value);
-        termInput.value = "";
-        analyzeAndRespond(value);
-      } else if (e.key === "ArrowUp") {
-        if (history.length > 0) {
-          historyIndex = Math.max(0, historyIndex - 1);
-          termInput.value = history[historyIndex] || "";
-          // Move caret to end
-          requestAnimationFrame(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length));
-        }
-        e.preventDefault();
-      } else if (e.key === "ArrowDown") {
-        if (history.length > 0) {
-          historyIndex = Math.min(history.length, historyIndex + 1);
-          termInput.value = historyIndex === history.length ? "" : (history[historyIndex] || "");
-          requestAnimationFrame(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length));
-        }
-        e.preventDefault();
-      }
-    });
-  }
-
-  function startApp() {
-    document.getElementById('boot').style.display = 'none';
-    document.getElementById('container').style.display = 'grid';
-    Array.from(typeChild).forEach((node) => node.style.visibility = "hidden");
-    const promises = Array.from(shuffleChild).map((node) => decryptEffect(node));
-    Promise.allSettled(promises).then(() => {
-      Array.from(typeChild).forEach((node) => {
-        typewriterElements(node, 30, () => promptCursor.style.display = "block");
-      });
-      procDot();
-      setupTerminal();
-      termInput.focus();
-      queueTypeToTerminal([
-        "Type 'help' to see available commands.",
-      ], 10);
-    });
-  }
-  function procDot() {
-    repos.forEach(repo => {
-      const blip = document.createElement('div');
-      blip.className = 'blip crt';
-      const x = 20 + Math.random() * 60;
-      const y = 20 + Math.random() * 60;
-      blip.style.left = `${x}%`;
-      blip.style.top = `${y}%`;
-
-      const label = document.createElement('div');
-      label.className = 'uuid';
-      label.style.fontSize = 'initial';
-      label.textContent = self.crypto.randomUUID().slice(0,6);
-      blip.appendChild(label);
-
-      blip.addEventListener('mouseenter', () => {
-        codec.style.display = 'block';
-        codec.innerHTML = `<strong style="margin-top: 1em">${repo.name}</strong><br>${repo.desc}<br>`;
-      });
-
-      blip.addEventListener('mouseleave', () => {
-        codec.innerHTML = "";
-      });
-
-      blip.addEventListener('click', () => {
-        blip.classList.add("blip-checked");
-        blip.style.animation = "pulse-ok 2s infinite";
-
-        queueTypeToTerminal([
-          `${repo.icon} Loading mission data for ${repo.name}...`,
-          `Description: ${repo.desc}`,
-          `Repository link: ${repo.url}`,
-          `Status: READY`,
-          `.`
-        ]);
-      });
-
-      setTimeout(() => {
-        map.appendChild(blip);
-        blip.style.animation = "pulse 2s infinite";
-      }, Math.floor(Math.random() * 1000))
-    });
-  }
-
-  Array.from(typeChildBoot).forEach((node) => node.style.visibility = "hidden");
-  const promises = Array.from(shuffleBoot).map((node) => decryptEffect(node));
-  Promise.allSettled(promises).then(() => {
-    const typePromises = Array.from(typeChildBoot).map((node) => typewriterElements(node, 30, () => promptCursor.style.display = "block"));
-    Promise.allSettled(typePromises).then(() => {
-      document.addEventListener('keydown', () => startApp(), { once: true });
-      document.addEventListener('touchend', () => startApp(), { once: true });
-    })
-  });
-
-  (function setupKonami() {
-    const sequence = [
-      "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
-      "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight",
-      "b","a"
-    ];
-    let position = 0;
-
-    function launchVideoEasterEgg() {
-      // Avoid multiple activations
-      if (document.getElementById('egg-overlay')) return;
-
-      const overlay = document.createElement('div');
-      overlay.id = 'egg-overlay';
-      overlay.style.position = 'fixed';
-      overlay.style.inset = '0';
-      overlay.style.background = 'black';
-      overlay.style.zIndex = '9999';
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-
-      // Keep aspect ratio and cover most of the screen
-      const wrapper = document.createElement('div');
-      wrapper.style.width = '100vw';
-      wrapper.style.height = '100vh';
-      wrapper.classList.add("crt");
-
-      const iframe = document.createElement('iframe');
-      iframe.width = '100%';
-      iframe.height = '100%';
-      iframe.style.border = '0';
-      iframe.allow = 'autoplay; fullscreen';
-      // note: autoplay is more reliable when muted due to browser policies
-      // but this joke is a joke only with the sound :)
-      iframe.src = 'https://www.youtube.com/embed/E4WlUXrJgy4?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1';
-
-      wrapper.appendChild(iframe);
-      overlay.appendChild(wrapper);
-      document.body.appendChild(overlay);
-
-      const cleanup = () => {
-        document.removeEventListener('keydown', onEsc);
-        overlay.removeEventListener('click', cleanup);
-        if (document.fullscreenElement && document.fullscreenElement === overlay) {
-          document.exitFullscreen().catch(() => {});
-        }
-        overlay.remove();
-      };
-
-      const onEsc = (e) => {
-        if (e.key === 'Escape') cleanup();
-      };
-
-      document.addEventListener('keydown', onEsc);
-      overlay.addEventListener('click', cleanup);
-
-      // Try to request fullscreen on the overlay
-      if (overlay.requestFullscreen) {
-        overlay.requestFullscreen().catch(() => {});
-      }
-    }
-
-    document.addEventListener('keydown', (e) => {
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      if (key === sequence[position]) {
-        position += 1;
-        if (position === sequence.length) {
-          position = 0;
-          launchVideoEasterEgg();
-          queueTypeToTerminal(["You got Rickrolled? That happened to the best 😉"])
-        }
-      } else {
-        // If mismatch but key could be start of sequence, reset to 1 or 0
-        position = (key === sequence[0]) ? 1 : 0;
-      }
-    });
-  })();
-
-  window.addEventListener("load", (event) => {
-    new cursoreffects.ghostCursor();
-  });
-</script>
-<script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

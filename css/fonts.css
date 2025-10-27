@@ -1,0 +1,59 @@
+/* Fonts CSS - Import de toutes les fonts */
+
+/* Aldrich Font */
+@font-face {
+    font-family: 'Aldrich';
+    src: url('../fonts/Aldrich/Aldrich-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.aldrich {
+    font-family: 'Aldrich', sans-serif;
+}
+
+/* Lobster Font */
+@font-face {
+    font-family: 'Lobster';
+    src: url('../fonts/Lobster/Lobster-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.lobster {
+    font-family: 'Lobster', cursive;
+}
+
+/* VT323 Font */
+@font-face {
+    font-family: 'VT323';
+    src: url('../fonts/VT323/VT323-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.vt323 {
+    font-family: 'VT323', monospace;
+}
+
+/* Jacquard 12 Font */
+@font-face {
+    font-family: 'Jacquard12';
+    src: url('../fonts/Jacquard_12/Jacquard12-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.jacquard12 {
+    font-family: 'Jacquard12', display;
+}
+
+/* Classes utilitaires pour les fonts */
+.font-aldrich { font-family: 'Aldrich', sans-serif; }
+.font-lobster { font-family: 'Lobster', cursive; }
+.font-vt323 { font-family: 'VT323', monospace; }
+.font-jacquard12 { font-family: 'Jacquard12', display; }
