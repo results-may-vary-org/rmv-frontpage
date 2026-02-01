@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMv - Results May Vary | Debloated open source project</title>
+    <meta name="description" content="RmV creates open source software that does one thing exceptionally well. Uncluttered tools for everyone.">
+    <meta name="keywords" content="open source, linux software, minimal design, focused development, github projects, clean code, accessibility, rmv studio">
+    <meta name="author" content="A2N">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rmv.a2n.dev/">
+    <meta property="og:title" content="RMv - Results May Vary | Open Source Projects">
+    <meta property="og:description" content="Creating debloated open source software that does one thing exceptionally well.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://rmv.a2n.dev/">
+    <meta property="twitter:title" content="RMv - Results May Vary | Open Source Projects">
+    <meta property="twitter:description" content="Creating debloated open source software that does one thing exceptionally well.">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="shortcut icon" href="assets/favicon.ico">
+
+    <link rel="canonical" href="https://rmv.a2n.dev/">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/snow.css">
+</head>
+<body>
+
+    <!-- <div class="noise-container">
+        <div class="noise"></div>
+    </div> -->
+
+    <!-- <div class="scrolling-banner">
+        <div class="banner-content">
+           check our latest project > <a href="https://github.com/results-may-vary-org/tape" target="_blank">tape</a> • <i>we craft code so good you'll assume the bugs are intentional features</i> •
+        </div>
+    </div> -->
+
+    <header class="main-header">
+        <div class="header-left">
+            <span class="location">* <a href="https://github.com/results-may-vary-org" target="_blank" class="location-link">github.com/results-may-vary-org</a></span>
+        </div>
+        <div class="header-center">
+            <span class="tagline">
+                <span class="tagline-letter">r</span><span class="tagline-letter">e</span><span class="tagline-letter">s</span><span class="tagline-letter">u</span><span class="tagline-letter">l</span><span class="tagline-letter">t</span><span class="tagline-letter">s</span> <span class="tagline-letter">m</span><span class="tagline-letter">a</span><span class="tagline-letter">y</span> <span class="tagline-letter">v</span><span class="tagline-letter">a</span><span class="tagline-letter">r</span><span class="tagline-letter">y</span>
+            </span>
+        </div>
+        <div class="header-right">
+            <nav>
+                <a href="#projects">projects</a>
+                <a href="#info-grid">about</a>
+                <a href="https://todo.rmv.a2n.dev/" target="_blank">todo</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="logo">
+                <span class="logo-r logo-letter">R</span><span class="logo-m logo-letter">M</span><span class="logo-v logo-letter">v</span>
+            </div>
+        </section>
+
+        <section id="info-grid" class="info-grid">
+            <div class="info-left">
+                <h2 class="studio-name">RMv</h2>
+                <p class="description">
+                    RMv serves as a unified home for open source projects that prioritize substance over bloat. Each tool is designed with intention: clean interfaces, essential features, and thoughtful user experiences that respect your time and system resources.
+                </p>
+                <p class="philosophy">
+                    With 20+ years navigating the Linux ecosystem, I believe great software should do one thing exceptionally well. Open source democratizes access to quality tools, ensuring everyone can benefit from technological solutions regardless of their economic situation. No feature creep, no unnecessary complexity—just purposeful code that solves real problems.
+                </p>
+                <div class="studio-links">
+                    <a href="https://github.com/results-may-vary-org" target="_blank" class="link">check our projects</a>
+                </div>
+            </div>
+
+            <div class="info-right">
+                <div class="contact-info">
+                    <h3>find us</h3>
+                    <p><a href="https://github.com/results-may-vary-org" target="_blank" class="contact-info-link">github.com/results-may-vary-org</a></p>
+                    <p><a href="https://aur.archlinux.org/packages?K=a2n&SeB=m" target="_blank" class="contact-info-link">AUR packages</a></p>
+                    <p><a href="https://www.pling.com/u/a2-n" target="_blank" class="contact-info-link">KDE Store</a></p>
+                </div>
+
+                <div class="hours">
+                    <h3>development approach</h3>
+                    <p>one purpose, done well</p>
+                    <p>clean design</p>
+                    <p>no bloat, no feature creep</p>
+                    <p>accessible tools</p>
+                </div>
+
+                <div class="actions">
+                    <h3>collaborate</h3>
+                    <p><a href="https://github.com/results-may-vary-org" target="_blank" class="action-link">contribute (→)</a></p>
+                    <p><a href="https://github.com/sponsors/bouteillerAlan" target="_blank" class="action-link">sponsor (→)</a></p>
+                    <p><a href="https://todo.rmv.a2n.dev/" target="_blank" class="action-link">roadmap (→)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <div class="projects-header">
+                <h2>Our Projects</h2>
+            </div>
+
+            <div class="projects-grid">
+                <a href="https://github.com/results-may-vary-org/tape" target="_blank" class="project-card">
+                    <h3>Tape</h3>
+                    <p>Just markdown note - no bloat included</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/postier" target="_blank" class="project-card">
+                    <h3>Postier</h3>
+                    <p>Just http request - no bloat included</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/blurredwallpaper" target="_blank" class="project-card">
+                    <h3>Blurred Wallpaper</h3>
+                    <p>Dynamic wallpaper blur for KDE Plasma</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/archupdate" target="_blank" class="project-card">
+                    <h3>Arch Update</h3>
+                    <p>System update notifier for KDE Plasma</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/earbud-companion" target="_blank" class="project-card">
+                    <h3>Earbud Companion</h3>
+                    <p>Earbud status for KDE Plasma</p>
+                </a>
+
+                <a href="https://github.com/results-may-vary-org/docker-companion" target="_blank" class="project-card">
+                    <h3>Docker Companion</h3>
+                    <p>Docker status for KDE Plasma</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/kuro" target="_blank" class="project-card">
+                    <h3>Kuro</h3>
+                    <p>A sweet KDE Plasma loading screen, also in "OLED" version</p>
+                </a>
+
+                <a href="https://github.com/bouteillerAlan/dracut-numlock" target="_blank" class="project-card">
+                    <h3>Dracut Numlock</h3>
+                    <p>Boot-time numlock activation</p>
+                </a>
+                
+                <a href="https://github.com/results-may-vary-org/surf" target="_blank" class="project-card">
+                    <h3>Surf</h3>
+                    <p>Keyboard-driven browser homepage with built-in theme</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <span class="footer-logo-text">results may vary</span>
+                </div>
+                <div class="footer-credits">
+                    <p>Design & code by Bouteiller A2N Alan</p>
+                    <p class="gpg-info">GPG # 6A2E CC8A 396F 8A94 3A10 9A1E 0F11 C2A6 BF79 111E</p>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <div class="footer-contact">
+                    <p>Contact us: <a href="mailto:hi@a2n.dev" class="contact-link">hi@a2n.dev</a></p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/results-may-vary-org" target="_blank" class="footer-link">github</a>
+                    <a href="https://www.pling.com/u/a2-n" target="_blank" class="footer-link">kde store</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
