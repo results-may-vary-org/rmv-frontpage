@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
       actionText: "* Check / Install",
       actionLink: "https://github.com/results-may-vary-org/ttydal",
       pos: 1
-    }
+    },
   ];
   projects.sort((a, b) => a.pos > b.pos ? 1 : -1);
   const projectDiv = document.getElementById("project");
@@ -120,14 +120,11 @@ document.addEventListener('DOMContentLoaded', function() {
       link.href = project.actionLink;
       link.target = "_blank";
       link.rel = "noreferrer";
-      if (project.img) {
+      if (project.img || true) { /* todo: */
         const img = document.createElement("img");
-        img.src = project.img;
+        img.src = './assets/postier.svg';
         img.alt = `screenshot of the ${project.name} project`;
-        img.style.height = "10em";
         slashed.appendChild(img);
-      } else {
-        slashed.style.height = "10em";
       }
       imgContainer.appendChild(slashed);
       txtContainer.appendChild(title);
@@ -137,17 +134,22 @@ document.addEventListener('DOMContentLoaded', function() {
       p.className = "project";
       p.appendChild(imgContainer);
       p.appendChild(txtContainer);
-      if ((index+1) % 2 === 1) {
+      if ((index+1) % 3 === 1) {
         flex = document.createElement("div");
         flex.style.display = "flex";
       }
       if (flex) { /* just in case */
         flex.appendChild(p);
       }
-      if ((index+1) % 2 === 1 && flex) {
+      if ((index+1) % 3 === 0 && flex) {
         projectDiv.appendChild(flex);
       }
     })
+
+    // add any remaining projects that don't complete a full row
+    if (flex && flex.children.length > 0 && projects.length % 3 !== 0) {
+      projectDiv.appendChild(flex);
+    }
   }
 });
 
