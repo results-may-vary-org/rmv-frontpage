@@ -6,6 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
     '██║  ██║██║ ╚═╝ ██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║     ██║  ██║╚██████╔╝███████╗\n' +
     '╚═╝  ╚═╝╚═╝     ╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝\n');
 
+  // Synchronization mechanism for project loading
+  window.projectsLoadedPromise = {};
+  window.projectsLoadedPromise.resolve = null;
+  window.projectsLoadedPromise.promise = new Promise(resolve => {
+    window.projectsLoadedPromise.resolve = resolve;
+  });
+  window.projectsLoaded = false;
+
   // smooth scroll for navigation
   const navLinks = document.querySelectorAll('nav a[href^="#"]');
   navLinks.forEach(link => {
@@ -151,12 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => { // add some timeout to get a nice ux
               const t = text;
               children[0].innerText = t;
-            }, 50 * index)
+            }, 150 * index)
           }
         }
 
         // resolve on the last project
         if (index === totalProjects - 1) {
+          console.log(`All ${totalProjects} projects loaded successfully!`);
+          window.projectsLoaded = true;
+          window.projectsLoadedPromise.resolve();
           resolve();
         }
       });
@@ -176,11 +187,24 @@ document.addEventListener('DOMContentLoaded', function() {
   function animateProject() {
     const containers = document.getElementsByClassName('slashed');
     [...containers].forEach((container) => {
+      animate(container.firstChild, {
+        opacity: 1,
+        duration: 0
+      });
+      animate(container, {
+        opacity: 1,
+        duration: 320,
+        delay: stagger(100),
+        autoplay: onScroll({
+          target: container,
+          debug: false,
+        })
+      });
       animate(svg.createDrawable(container.firstChild), {
         draw: ['0 0', '0 1'],
         ease: 'inOutQuad',
-        duration: 900,
-        delay: 250,
+        duration: 1350,
+        delay: stagger(100),
         autoplay: onScroll({
           target: container,
           debug: false,
@@ -193,6 +217,16 @@ document.addEventListener('DOMContentLoaded', function() {
   loaderTl.label('start')
     // scroll top
     .call(() => window.scrollTo(0, 0))
+    // start loading projects in parallel with logo animation
+    .call(() => {
+      console.log('Starting project loading...');
+      loadProjects().catch(err => {
+        console.error('Error loading projects:', err);
+        // Still resolve the promise to prevent timeline from hanging
+        window.projectsLoaded = true;
+        window.projectsLoadedPromise.resolve();
+      });
+    })
     // animate the logo
     .add(svg.createDrawable('.logo'), {
       draw: ['0 0', '0 .25', '.25 .5', '.5 .75', '.75 1', '1 1', '1 1', '1 1'], /* fixme: the 11 11 11 is not clean */
@@ -210,9 +244,19 @@ document.addEventListener('DOMContentLoaded', function() {
     .add('.logo', {display: 'none', duration: 0})
     .add('.logo-end', {display: 'initial', duration: 0})
     .add('.logo-end', {fill: '#e50000', duration: 400})
-    // fade the loader
+    // wait for projects to be fully loaded before fading out
+    .call(() => {
+      console.log('Waiting for projects to complete loading...');
+      return window.projectsLoadedPromise.promise;
+    })
+    // fade the loader (only runs after both logo animation AND project loading complete)
     .add(loader, {opacity: [1, 0], duration: 800})
     .add(loader, {display: 'none', duration: 0})
+    // trigger project animations now that both conditions are met
+    .call(() => {
+      console.log('Both conditions met: triggering project animations');
+      animateProject();
+    })
     // restore the scroll
     .add(body, {overflow: 'initial', duration: 0});
 });
