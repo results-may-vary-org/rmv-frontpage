@@ -250,15 +250,15 @@ document.addEventListener('DOMContentLoaded', function() {
       return window.projectsLoadedPromise.promise;
     })
     // fade the loader (only runs after both logo animation AND project loading complete)
-    .add(loader, {opacity: [1, 0], duration: 800})
+    .add(loader, {opacity: [1, 0], duration: 800, delay: 400})
     .add(loader, {display: 'none', duration: 0})
+    // restore the scroll
+    .add(body, {overflow: 'initial', duration: 0})
     // trigger project animations now that both conditions are met
     .call(() => {
       console.log('Both conditions met: triggering project animations');
       animateProject();
-    })
-    // restore the scroll
-    .add(body, {overflow: 'initial', duration: 0});
+    });
 });
 
 window.addEventListener('load', function() {
