@@ -59,6 +59,11 @@ body {
   position: absolute; /* to position the shadow one below */
 }
 
+.count {
+  position: absolute;
+  top: 1em;
+}
+
 .container {
   margin: 0 auto;
   width: 80%;

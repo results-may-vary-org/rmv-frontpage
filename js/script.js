@@ -100,10 +100,20 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
 
   async function loadProjects() {
-    projects.sort((a, b) => a.pos > b.pos ? 1 : -1);
-    const projectDiv = document.getElementById("project");
-    if (projectDiv) {
-      projects.forEach((project) => {
+    return new Promise((resolve) => {
+      projects.sort((a, b) => a.pos > b.pos ? 1 : -1);
+      const projectDiv = document.getElementById("project");
+
+      if (!projectDiv) {
+        console.log('Project container not found');
+        resolve();
+        return;
+      }
+
+      const totalProjects = projects.length;
+      console.log(`Starting to load ${totalProjects} projects...`);
+
+      projects.forEach((project, index) => {
         const imgContainer = document.createElement("div");
         imgContainer.className = "img";
         const slashed = document.createElement("div");
@@ -132,8 +142,25 @@ document.addEventListener('DOMContentLoaded', function() {
         p.appendChild(imgContainer);
         p.appendChild(txtContainer);
         projectDiv.appendChild(p);
+
+        const count = document.getElementsByClassName('count');
+        if (count && count.length > 0) {
+          const children = count[0].children;
+          if (children && children.length > 0) {
+            const text = `${index + 1}/${totalProjects}`;
+            setTimeout(() => { // add some timeout to get a nice ux
+              const t = text;
+              children[0].innerText = t;
+            }, 50 * index)
+          }
+        }
+
+        // resolve on the last project
+        if (index === totalProjects - 1) {
+          resolve();
+        }
       });
-    }
+    });
   }
 
   /* ******** */
@@ -144,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const loader = document.getElementById("loader");
   const body = document.getElementsByTagName('body')[0];
 
-  const loadTl = createTimeline();
+  const loaderTl = createTimeline();
 
   function animateProject() {
     const containers = document.getElementsByClassName('slashed');
@@ -162,14 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // I use two svg here, one for a *cool* path tracing, and the other one for filling
-  // I need two svg because for filling we need to have closed shape and the first one is not closed
-  // maybe not the most clean (:
-  loadTl.label('start')
+  // maybe not the most cleaner but the three svg allow for parallel animation and a nicer filling at the end
+  loaderTl.label('start')
+    // scroll top
     .call(() => window.scrollTo(0, 0))
-    .call(() => loadProjects()) /* launch the load the of the project, this is done in parallel of the animation */
+    // animate the logo
     .add(svg.createDrawable('.logo'), {
-      draw: ['0 0', '0 .25', '.25 .5', '.5 .75', '.75 1', '1 1', '1 1', '1 1'],
+      draw: ['0 0', '0 .25', '.25 .5', '.5 .75', '.75 1', '1 1', '1 1', '1 1'], /* fixme: the 11 11 11 is not clean */
       ease: 'linear',
       duration: 1000,
       delay: stagger(100),
@@ -184,17 +210,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .add('.logo', {display: 'none', duration: 0})
     .add('.logo-end', {display: 'initial', duration: 0})
     .add('.logo-end', {fill: '#e50000', duration: 400})
+    // fade the loader
     .add(loader, {opacity: [1, 0], duration: 800})
     .add(loader, {display: 'none', duration: 0})
-    .add(svg.createDrawable('.svanim'), {  /* dosent work because the svg dosent exist yet */
-      draw: ['0 0', '0 1'],
-      ease: 'inOutQuad',
-      duration: 900,
-      delay: 250,
-    })
-    .add(body, {overflow: 'initial', duration: 0})
-    .call(() => animateProject());
-  });
+    // restore the scroll
+    .add(body, {overflow: 'initial', duration: 0});
+});
 
 window.addEventListener('load', function() {
   const loadTime = performance.now();
