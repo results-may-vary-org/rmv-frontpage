@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
   ];
 
-  function loadProjects() {
+  async function loadProjects() {
     projects.sort((a, b) => a.pos > b.pos ? 1 : -1);
     const projectDiv = document.getElementById("project");
     if (projectDiv) {
@@ -134,24 +134,39 @@ document.addEventListener('DOMContentLoaded', function() {
         projectDiv.appendChild(p);
       });
     }
-    console.log('projects loaded')
   }
 
   /* ******** */
   /* anime js */
   /* ******** */
-  const { svg, stagger, createTimeline } = anime;
+  const { svg, stagger, createTimeline, onScroll, animate } = anime;
 
-  const content = document.getElementById("content");
   const loader = document.getElementById("loader");
   const body = document.getElementsByTagName('body')[0];
 
   const loadTl = createTimeline();
 
+  function animateProject() {
+    const containers = document.getElementsByClassName('slashed');
+    [...containers].forEach((container) => {
+      animate(svg.createDrawable(container.firstChild), {
+        draw: ['0 0', '0 1'],
+        ease: 'inOutQuad',
+        duration: 900,
+        delay: 250,
+        autoplay: onScroll({
+          target: container,
+          debug: false,
+        })
+      });
+    });
+  }
+
   // I use two svg here, one for a *cool* path tracing, and the other one for filling
   // I need two svg because for filling we need to have closed shape and the first one is not closed
   // maybe not the most clean (:
   loadTl.label('start')
+    .call(() => window.scrollTo(0, 0))
     .call(() => loadProjects()) /* launch the load the of the project, this is done in parallel of the animation */
     .add(svg.createDrawable('.logo'), {
       draw: ['0 0', '0 .25', '.25 .5', '.5 .75', '.75 1', '1 1', '1 1', '1 1'],
@@ -171,20 +186,15 @@ document.addEventListener('DOMContentLoaded', function() {
     .add('.logo-end', {fill: '#e50000', duration: 400})
     .add(loader, {opacity: [1, 0], duration: 800})
     .add(loader, {display: 'none', duration: 0})
+    .add(svg.createDrawable('.svanim'), {  /* dosent work because the svg dosent exist yet */
+      draw: ['0 0', '0 1'],
+      ease: 'inOutQuad',
+      duration: 900,
+      delay: 250,
+    })
     .add(body, {overflow: 'initial', duration: 0})
-  ;
-
-  // const tl = createTimeline();
-  // tl.label('start')
-  //   .add(svg.createDrawable('.svanim'), {
-  //     draw: ['0 0', '0 1'],
-  //     ease: 'inOutQuad',
-  //     duration: 800,
-  //     delay: stagger(100),
-  //     loop: false
-  //   }, 'start')
-  //   .call(() => document.getElementsByTagName('body')[0].classList.remove('ns'));
-});
+    .call(() => animateProject());
+  });
 
 window.addEventListener('load', function() {
   const loadTime = performance.now();
