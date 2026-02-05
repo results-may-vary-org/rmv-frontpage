@@ -63,7 +63,7 @@ body {
   font-size: var(--font-base);
 }
 
-p {
+p, a {
   font-size: 1em;
 }
 

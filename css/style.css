@@ -82,6 +82,12 @@ body {
   }
 }
 
+.border {
+  border: solid 1px var(--base-color-border);
+  border-width: 0 0 1px 0;
+  opacity: 0; /* border animation */
+}
+
 header {
   display: flex;
   align-items: center;
@@ -89,11 +95,7 @@ header {
   border: solid 1px var(--base-color-border);
   border-width: 0 1px 1px;
   padding: 1em;
-}
-
-.border {
-  border: solid 1px var(--base-color-border);
-  border-width: 0 0 1px 0;
+  opacity: 0; /* border animation */
 }
 
 header > .link a {
@@ -104,6 +106,7 @@ header > .link a {
   border: solid 1px var(--base-color-border);
   border-width: 0 1px 1px;
   padding: 2em 0 0 0;
+  opacity: 0; /* border animation */
 }
 
 .content > .border:last-child {
