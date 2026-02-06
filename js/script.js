@@ -16,23 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   window.projectsLoaded = false;
 
-  // smooth scroll for navigation
-  const navLinks = document.querySelectorAll('nav a[href^="#"]');
-  navLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
-
-      if (targetSection) {
-        targetSection.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    });
-  });
-
   // generate project
   async function loadProjects() {
     return new Promise((resolve) => {
@@ -56,14 +39,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const txtContainer = document.createElement("div");
         txtContainer.className = "txt";
         const title = document.createElement("h3");
+        title.style.opacity = '0';
         title.innerHTML = project.name;
         const text = document.createElement("p");
         text.innerText = project.desc;
+        text.style.opacity = '0';
         const link = document.createElement("a");
         link.innerText = project.actionText;
         link.href = project.actionLink;
         link.target = "_blank";
         link.rel = "noreferrer";
+        link.style.opacity = '0';
         if (project.img) {
           const svgElement = new DOMParser().parseFromString(project.img, 'image/svg+xml').documentElement;
           slashed.appendChild(svgElement);
@@ -108,12 +94,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const loader = document.getElementById("loader");
   const body = document.getElementsByTagName('body')[0];
+
   const header = document.getElementById("header"); // h1, p
   const navLogo = document.getElementById("nav-logo");
   const navLink = document.getElementById("nav-link"); // a*
 
-  const navLogoChars = splitText(navLogo, { chars: { wrap: 'clip' } }).chars;
-  console.log(navLogo)
+  const headerTitleWords = splitText(header.children[0], { words: { wrap: 'clip' } });
+  const headerTextWords = splitText(header.children[1], { words: { wrap: 'clip' } });
+  const navLogoChars = splitText(navLogo, { chars: { wrap: 'clip' } });
+  const navLinkWords = splitText(navLink, { words: { wrap: 'clip' } });
+
+  utils.set(
+    [
+      navLogoChars.chars,
+      navLinkWords.words,
+      headerTitleWords.words,
+      headerTextWords.words,
+    ], { y: '100%' });
 
   const mainTimeline = createTimeline();
 
@@ -121,9 +118,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const projectContainers = document.getElementsByClassName('project');
     if (projectContainers && projectContainers.length > 0) {
       [...projectContainers].forEach((container) => {
-        const txt = container.children[1]; //.children; // h3, p, a
-        const img = container.children[0]; //.children; // slashed > svg.svanim
+        const txt = container.children[1]; //.children >> h3, p, a
+        const img = container.children[0]; //.children >> slashed > svg.svanim
         const svanim = img.children[0].children[0]; // svg.svanim
+
+        // project h3
+        const projectTitle = splitText(txt.children[0], {
+          words: { wrap: 'clip' },
+        });
+        const projectText = splitText(txt.children[1], {
+          words: { wrap: 'clip' },
+        });
+        const projectLink = splitText(txt.children[2], {
+          words: { wrap: 'clip' },
+        });
+        utils.set([projectTitle.words, projectText.words, projectLink.words], {
+          y: '100%',
+        });
 
         const timeline = createTimeline();
 
@@ -147,24 +158,24 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 1350,
             autoplay: true
           }, 'slashed-end')
-          .add(txt, {
+          .add([projectTitle.$target, projectText.$target, projectLink.$target], {
             opacity: 1,
             duration: 320,
           }, 'slashed-end')
-          .add(txt.children, {
-            opacity: 1,
-            duration: 800, // edit in fc of splitText?
-          }, 'slashed-end')
-          .add(txt.children, {
-            // text animation w/ splitText()?
-          })
+          .add([projectTitle.words, projectText.words, projectLink.words], {
+            y: ['100%', '0%'],
+            duration: 600,
+            ease: 'out(3)',
+            delay: stagger(80),
+          }, 'slashed-end');
       })
     }
   }
 
   // maybe not the most cleaner but the three svg allow for
   // parallel animation and a nicer filling at the end
-  mainTimeline.label('start')
+  mainTimeline
+    .label('start')
     .call(() => window.scrollTo(0, 0)) // reset scroll
     .call(() => { // start loading projects in parallel with logo animation
       loadProjects().catch(err => {
@@ -190,28 +201,58 @@ document.addEventListener('DOMContentLoaded', function() {
     .add('.logo', {display: 'none', duration: 0})
     .add('.logo-end', {display: 'initial', duration: 0})
     .add('.logo-end', {fill: '#e50000', duration: 600})
-    .call(() => window.projectsLoadedPromise.promise) // wait for projects to be fully loaded before fading out
+    .call(async () => await window.projectsLoadedPromise.promise) // wait for projects to be fully loaded before fading out
     .add(loader, {opacity: [1, 0], duration: 800, delay: 400}) // fade the loader (only runs after both logo animation AND project loading is complete)
     .call(() => {
       loader.style.display = 'none';
       body.style.overflow = 'initial';
     })
     .add(['.border', 'header', '.content'], { opacity: ['0', '1'], duration: 620 })
-    // logo
-    .add(navLogoChars, {
+    .label('content')
+    .add(navLogo, {
+      opacity: 1,
+      duration: 320
+    }, 'content')
+    .add(navLogoChars.chars, {
       y: ['100%', '0%'],
       duration: 1400,
-      ease: 'inOutQuint',
+      ease: 'out(3)',
       delay: stagger(50),
-      loop: true,
-    })
-    // link link link
-    // hero title
-    // hero text
-    // call on scroll footer timeline
-    .call(() => animateProjectOnScroll(), "<-=400")
+    }, 'content')
+    .add(navLink, {
+      opacity: 1,
+      duration: 320
+    }, 'content')
+    .add(navLinkWords.words, {
+      y: ['100%', '0%'],
+      duration: 1400,
+      ease: 'out(3)',
+      delay: stagger(50),
+    }, 'content')
+    .add(headerTitleWords.$target, {
+      opacity: 1,
+      duration: 320
+    }, 'content')
+    .add(headerTitleWords.words, {
+      y: ['100%', '0%'],
+      duration: 700,
+      ease: 'out(3)',
+      delay: stagger(30),
+    }, 'content')
+    .add(headerTextWords.$target, {
+      opacity: 1,
+      duration: 320
+    }, 'content')
+    .add(headerTextWords.words, {
+      y: ['100%', '0%'],
+      duration: 320,
+      ease: 'inOutQuad',
+      delay: stagger(15),
+    }, 'content')
 
-    // draw loop svg on mouse over
+    .call(() => animateProjectOnScroll(), 'content')
+  // footer ?
+  // draw loop svg on mouse over
   ;
 });
 
