@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ******** */
   /* anime js */
   /* ******** */
-  const { svg, stagger, createTimeline, onScroll, animate, splitText, utils } = anime;
+  const { svg, stagger, createTimeline, onScroll, splitText, utils } = anime;
 
   const loader = document.getElementById("loader");
   const body = document.getElementsByTagName('body')[0];
@@ -110,7 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
       navLinkWords.words,
       headerTitleWords.words,
       headerTextWords.words,
-    ], { y: '100%' });
+    ],
+    { y: '100%' },
+  );
+
+  utils.set(body, { '--a-opacity': '0', '--a-width': '0' })
 
   const mainTimeline = createTimeline();
 
@@ -167,14 +171,17 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 600,
             ease: 'out(3)',
             delay: stagger(80),
-          }, 'slashed-end');
-      })
+          }, 'slashed-end')
+      });
     }
   }
 
   // maybe not the most cleaner but the three svg allow for
   // parallel animation and a nicer filling at the end
   mainTimeline
+    .call(() => {
+      document.styleSheets[0].insertRule("a::after { content: ''; position: absolute; bottom: -0.2em; left: 0; width: var(--a-width); height: 0.1em; background: var(--base-color-dim); opacity: var(--a-opacity); transition: width 120ms;}", 0);
+    })
     .label('start')
     .call(() => window.scrollTo(0, 0)) // reset scroll
     .call(() => { // start loading projects in parallel with logo animation
@@ -249,10 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
       ease: 'inOutQuad',
       delay: stagger(15),
     }, 'content')
-
     .call(() => animateProjectOnScroll(), 'content')
-  // footer ?
-  // draw loop svg on mouse over
+    .add(body, {
+      '--a-opacity': '1',
+      '--a-width': '100%',
+    }, '+=230')
+    // footer ?
+    // draw loop svg on mouse over
   ;
 });
 
