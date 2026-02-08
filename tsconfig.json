@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "lib": "ES2023",
+    "target": "ES6"
+  }
+}
+
