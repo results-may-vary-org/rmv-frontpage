@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ******** */
   /* anime js */
   /* ******** */
-  const { svg, stagger, createTimeline, onScroll, splitText, utils } = anime;
+  const { animate, svg, stagger, createTimeline, splitText, utils } = anime;
 
   const loader = document.getElementById("loader");
   const body = document.getElementsByTagName('body')[0];
@@ -119,9 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const mainTimeline = createTimeline();
 
   function animateProjectOnScroll() {
+    const pause = {};
     const projectContainers = document.getElementsByClassName('project');
     if (projectContainers && projectContainers.length > 0) {
-      [...projectContainers].forEach((container) => {
+      [...projectContainers].forEach((container, index) => {
+        pause[index] = 0;
         const txt = container.children[1]; //.children >> h3, p, a
         const img = container.children[0]; //.children >> slashed > svg.svanim
         const svanim = img.children[0].children[0]; // svg.svanim
@@ -171,8 +173,34 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 600,
             ease: 'out(3)',
             delay: stagger(80),
-          }, 'slashed-end')
-      });
+          }, 'slashed-end');
+
+        let animateLink = null;
+        txt.children[2].addEventListener('mouseenter', () => {
+          pause[index] = 1;
+          animateLink = animate(svg.createDrawable(svanim), {
+            draw: ['0 0', '0 1', '1 1'],
+            ease: 'inOutQuad',
+            duration: 2900,
+            delay: stagger(300),
+            loop: true,
+            onLoop: () => {
+              if (pause[index] === 0) {
+                animateLink.pause();
+                animate(svg.createDrawable(svanim), {
+                  draw: ['0 0', '0 1'],
+                  duration: 2900 / 2,
+                  loop: false
+                })
+              }
+            }
+          });
+        });
+        txt.children[2].addEventListener('mouseleave', () => {
+          pause[index] = 0;
+        });
+
+      }); // end for
     }
   }
 
