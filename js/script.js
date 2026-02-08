@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const projectContainers = document.getElementsByClassName('project');
     if (projectContainers && projectContainers.length > 0) {
       [...projectContainers].forEach((container, index) => {
-        pause[index] = 0;
+        pause[`${index}`] = 0;
         const txt = container.children[1]; //.children >> h3, p, a
         const img = container.children[0]; //.children >> slashed > svg.svanim
         const svanim = img.children[0].children[0]; // svg.svanim
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let animateLink = null;
         txt.children[2].addEventListener('mouseenter', () => {
-          pause[index] = 1;
+          pause[`${index}`] = 1;
           animateLink = animate(svg.createDrawable(svanim), {
             draw: ['0 0', '0 1', '1 1'],
             ease: 'inOutQuad',
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             delay: stagger(300),
             loop: true,
             onLoop: () => {
-              if (pause[index] === 0) {
+              if (pause[`${index}`] === 0) {
                 animateLink.pause();
                 animate(svg.createDrawable(svanim), {
                   draw: ['0 0', '0 1'],
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         });
         txt.children[2].addEventListener('mouseleave', () => {
-          pause[index] = 0;
+          pause[`${index}`] = 0;
         });
 
       }); // end for
