@@ -7,6 +7,10 @@
   --red-color: #e50000;
 }
 
+.slashed path, .slashed line, .slashed rect {
+  stroke: var(--base-color);
+}
+
 .dn {
   display: none;
 }
@@ -157,7 +161,6 @@ header > .link a {
     grid-template-columns: 1fr;
   }
 }
-
 
 .content .img,
 .content .txt {

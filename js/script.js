@@ -8,6 +8,28 @@ document.addEventListener('DOMContentLoaded', function() {
     '██║  ██║██║ ╚═╝ ██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║     ██║  ██║╚██████╔╝███████╗\n' +
     '╚═╝  ╚═╝╚═╝     ╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝\n');
 
+  const colors = [
+    ['#F8955B', '#58356E', '#8B634B', 'rgba(248,149,91,0.1)', 'rgba(248,149,91,0.15)'],
+    ['#F4BF3C', '#286360', '#b69e62', 'rgba(244,191,60,0.1)', 'rgba(244,191,60,0.15)'],
+    ['#105099', '#FFE9F3', '#6799D2', 'rgba(16,80,153,0.1)', 'rgba(16,80,153,0.15)'],
+    ['#FFFFFF', '#1F1F1F', '#696969', 'rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.15)'],
+    ['#fdf0e7', '#fdf0e780', '#fdf0e74d', '#0b0b0b', '#e50000'], /* initial value */
+  ];
+
+  const vars = ['--base-color', '--base-color-dim', '--base-color-border', '--back-color', '--red-color'];
+
+  let init = 0;
+
+  const trigger = document.getElementById('nav-logo');
+  const body = document.body;
+
+  trigger.addEventListener('click', () => {
+    vars.forEach((vari, i) => {
+      body.style.setProperty(vari, colors[init][i]);
+    })
+    init = init === colors.length-1 ? 0 : init+1;
+  })
+
   // Synchronization mechanism for project loading
   window.projectsLoadedPromise = {};
   window.projectsLoadedPromise.resolve = null;
@@ -93,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const { animate, svg, stagger, createTimeline, splitText, utils } = anime;
 
   const loader = document.getElementById("loader");
-  const body = document.getElementsByTagName('body')[0];
 
   const header = document.getElementById("header"); // h1, p
   const navLogo = document.getElementById("nav-logo");
