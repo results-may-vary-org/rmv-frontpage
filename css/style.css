@@ -2,7 +2,8 @@
   --base-color: #fdf0e7;
   --base-color-dim: #fdf0e780;
   --base-color-border: #fdf0e74d;
-  --back-color: #151515;
+  /* --back-color: #151515; */
+  --back-color: #0b0b0b;
   --red-color: #e50000;
 }
 
