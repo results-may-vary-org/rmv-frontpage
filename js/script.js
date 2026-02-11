@@ -7,16 +7,20 @@ document.addEventListener('DOMContentLoaded', function() {
     '██╔══██╗██║╚██╔╝██║╚██╗ ██╔╝    ██╔══╝  ██╔══██╗██║   ██║██║╚██╗██║   ██║   ██╔═══╝ ██╔══██║██║   ██║██╔══╝  \n' +
     '██║  ██║██║ ╚═╝ ██║ ╚████╔╝     ██║     ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║     ██║  ██║╚██████╔╝███████╗\n' +
     '╚═╝  ╚═╝╚═╝     ╚═╝  ╚═══╝      ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝\n');
-
+  /**
+    --pri-color: #000000; text
+    --sec-color: #E1DFDD; bck
+    --ter-color: #787878; sec text
+    --grid-color: rgba(0, 0, 0, 0.1); grid
+    **/
   const colors = [
-    ['#F8955B', '#58356E', '#8B634B', 'rgba(248,149,91,0.1)', 'rgba(248,149,91,0.15)'],
-    ['#F4BF3C', '#286360', '#b69e62', 'rgba(244,191,60,0.1)', 'rgba(244,191,60,0.15)'],
-    ['#105099', '#FFE9F3', '#6799D2', 'rgba(16,80,153,0.1)', 'rgba(16,80,153,0.15)'],
-    ['#FFFFFF', '#1F1F1F', '#696969', 'rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.15)'],
-    ['#fdf0e7', '#fdf0e780', '#fdf0e74d', '#0b0b0b', '#e50000'], /* initial value */
+    ['#F8955B', '#58356E', '#8B634B', 'rgba(248,149,91,0.1)', '#F8955B'],
+    ['#F4BF3C', '#286360', '#b69e62', 'rgba(244,191,60,0.1)', '#F4BF3C'],
+    ['#105099', '#FFE9F3', '#6799D2', 'rgba(16,80,153,0.1)', '#105099'],
+    ['#fdf0e7', '#0b0b0b', '#fdf0e780', '#fdf0e74d', '#e50000'], /* initial value */
   ];
 
-  const vars = ['--base-color', '--base-color-dim', '--base-color-border', '--back-color', '--red-color'];
+  const vars = ['--base-color', '--back-color', '--base-color-dim', '--base-color-border', '--red-color'];
 
   let init = 0;
 

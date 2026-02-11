@@ -2,7 +2,6 @@
   --base-color: #fdf0e7;
   --base-color-dim: #fdf0e780;
   --base-color-border: #fdf0e74d;
-  /* --back-color: #151515; */
   --back-color: #0b0b0b;
   --red-color: #e50000;
 }
@@ -18,6 +17,10 @@
 .logo-text {
   font-family: 'Jacquard12', display;
   color: var(--red-color);
+}
+
+.logo-text:hover {
+  cursor: pointer;
 }
 
 .svanim {
