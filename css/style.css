@@ -6,6 +6,11 @@
   --red-color: #e50000;
 }
 
+body {
+  transition: color 320ms;
+  transition: background 320ms;
+}
+
 .slashed path, .slashed line, .slashed rect {
   stroke: var(--base-color);
 }
@@ -30,8 +35,8 @@
 .slashed {
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.08) 0px,
-    rgba(255, 255, 255, 0.08) 4px,
+    color-mix(in srgb, var(--base-color) 8%, transparent) 0px,
+    color-mix(in srgb, var(--base-color) 8%, transparent) 4px,
     transparent 4px,
     transparent 8px
   );
