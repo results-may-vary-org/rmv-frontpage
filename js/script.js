@@ -179,26 +179,26 @@ document.addEventListener('DOMContentLoaded', function() {
         txt.children[2].addEventListener('mouseenter', () => {
           pause[`${index}`] = 1;
           animateLink = animate(svg.createDrawable(svanim), {
-            draw: ['0 0', '0 1', '1 1'],
+            draw: ['0 0', '0 1'],
             ease: 'inOutQuad',
             duration: 2900,
             delay: stagger(300),
-            loop: true,
-            onLoop: () => {
-              if (pause[`${index}`] === 0) {
-                animateLink.pause();
-                animate(svg.createDrawable(svanim), {
-                  draw: ['0 0', '0 1'],
-                  duration: 2900 / 2,
-                  loop: false
-                })
-              }
-            }
+            loop: false,
+            // onLoop: () => {
+            //   if (pause[`${index}`] === 0) {
+            //     animateLink.pause();
+            //     animate(svg.createDrawable(svanim), {
+            //       draw: ['0 0', '0 1'],
+            //       duration: 2900 / 2,
+            //       loop: false
+            //     })
+            //   }
+            // }
           });
         });
-        txt.children[2].addEventListener('mouseleave', () => {
-          pause[`${index}`] = 0;
-        });
+        // txt.children[2].addEventListener('mouseleave', () => {
+        //   pause[`${index}`] = 0;
+        // });
 
       }); // end for
     }
@@ -289,8 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
       '--a-opacity': '1',
       '--a-width': '100%',
     }, '+=230')
-    // footer ?
-    // draw loop svg on mouse over
   ;
 });
 
