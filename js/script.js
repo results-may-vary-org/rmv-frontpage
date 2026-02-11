@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
           animateLink = animate(svg.createDrawable(svanim), {
             draw: ['0 0', '0 1'],
             ease: 'inOutQuad',
-            duration: 2900,
+            duration: 1200,
             delay: stagger(300),
             loop: false,
             // onLoop: () => {
