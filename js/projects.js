@@ -86,6 +86,14 @@ export const projects = [
     "actionText": "* Check / Install",
     "actionLink": "https://github.com/bouteillerAlan/word-list-fr",
     "pos": 10
+  },
+  {
+    "name": "typecode",
+    "desc": "Monkeytype but with real code.",
+    "img": "<svg width=\"848\" height=\"537\" viewBox=\"0 0 848 537\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"543\" y=\"3\" width=\"224\" height=\"70\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"773\" y=\"79\" width=\"72\" height=\"72\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"467\" y=\"79\" width=\"70\" height=\"379\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"543\" y=\"464\" width=\"224\" height=\"70\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"773\" y=\"388\" width=\"72\" height=\"70\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"3\" y=\"3\" width=\"378\" height=\"70\" stroke=\"#F7EACF\" stroke-width=\"6\"/><rect x=\"158\" y=\"79\" width=\"71\" height=\"455\" stroke=\"#F7EACF\" stroke-width=\"6\"/></svg>",
+    "actionText": "* Check / Install",
+    "actionLink": "https://github.com/bouteillerAlan/type",
+    "pos": 12
   }
 ]
 
